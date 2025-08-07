@@ -14,7 +14,7 @@ internal class BackendApplicationTests {
     companion object {
         @Container
         var postgresqlContainer: PostgreSQLContainer<*> =
-            PostgreSQLContainer("postgres:16")
+            PostgreSQLContainer("postgres:17")
 
         @JvmStatic
         @DynamicPropertySource

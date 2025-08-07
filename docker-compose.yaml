@@ -5,6 +5,8 @@ services:
     depends_on:
       fliplet-postgres:
         condition: service_healthy
+      fliplet-redis:
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -17,7 +19,7 @@ services:
       - fliplet-network
 
   fliplet-postgres:
-    image: postgres:16
+    image: postgres:17
     env_file:
       - .env
     environment:
@@ -37,8 +39,24 @@ services:
       start_period: 30s
       timeout: 10s
 
+  fliplet-redis:
+    image: redis:8
+    ports:
+      - "${REDIS_EXTERNAL_PORT}:6379"
+    volumes:
+      - fliplet-redis-data:/data
+    networks:
+      - fliplet-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
 volumes:
   fliplet-postgres-data:
+  fliplet-redis-data:
 
 networks:
   fliplet-network:
