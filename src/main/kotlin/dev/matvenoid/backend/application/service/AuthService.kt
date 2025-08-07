@@ -6,10 +6,11 @@ import dev.matvenoid.backend.application.dto.AuthResponse
 import dev.matvenoid.backend.application.dto.LoginRequest
 import dev.matvenoid.backend.application.dto.RefreshTokenRequest
 import dev.matvenoid.backend.application.dto.RegistrationRequest
+import dev.matvenoid.backend.application.security.UserPrincipal
 import dev.matvenoid.backend.application.usecase.AuthUseCase
 import dev.matvenoid.backend.domain.exception.InvalidTokenException
-import dev.matvenoid.backend.domain.model.User
 import dev.matvenoid.backend.domain.exception.UserAlreadyExistsException
+import dev.matvenoid.backend.domain.model.User
 import dev.matvenoid.backend.domain.repository.UserRepository
 import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.security.authentication.AuthenticationManager
@@ -35,9 +36,7 @@ class AuthService(
         val phone = normalizePhoneNumber(request.phone)
 
         if (userRepository.existsByPhone(phone.forDb)) {
-            throw UserAlreadyExistsException(
-                "Пользователь с телефоном ${phone.forDisplay} уже существует"
-            )
+            throw UserAlreadyExistsException("Пользователь с телефоном ${phone.forDisplay} уже существует")
         }
 
         val user = User.create(
@@ -50,8 +49,10 @@ class AuthService(
         val savedUser = userRepository.save(user)
 
         val userDetails = userDetailsService.loadUserByUsername(savedUser.phone)
-        val accessToken = jwtService.generateAccessToken(userDetails)
-        val refreshToken = jwtService.generateRefreshToken(userDetails)
+        val principal = userDetails as UserPrincipal
+
+        val accessToken = jwtService.generateAccessToken(principal)
+        val refreshToken = jwtService.generateRefreshToken(principal)
 
         return AuthResponse(accessToken, refreshToken)
     }
@@ -59,29 +60,32 @@ class AuthService(
     override fun login(request: LoginRequest): AuthResponse {
         val phone = normalizePhoneNumber(request.phone)
 
-        authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(
-                phone.forDb,
-                request.password
+        try {
+            authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(
+                    phone.forDb,
+                    request.password
+                )
             )
-        )
+        } catch (_: Exception) {
+            throw BadCredentialsException("Неверные учетные данные")
+        }
 
         val userDetails = userDetailsService.loadUserByUsername(phone.forDb)
+        val principal = userDetails as UserPrincipal
 
-        val accessToken = jwtService.generateAccessToken(userDetails)
-        val refreshToken = jwtService.generateRefreshToken(userDetails)
+        val accessToken = jwtService.generateAccessToken(principal)
+        val refreshToken = jwtService.generateRefreshToken(principal)
 
         return AuthResponse(accessToken, refreshToken)
     }
 
-
     override fun logout(request: RefreshTokenRequest) {
         val refreshToken = request.refreshToken
-
         try {
             val remainingTime = jwtService.getRemainingExpiration(refreshToken)
             tokenBlacklistService.addToBlacklist(refreshToken, remainingTime)
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     override fun refresh(request: RefreshTokenRequest): AuthResponse {
@@ -91,23 +95,27 @@ class AuthService(
             throw InvalidTokenException("Токен недействителен")
         }
 
-        val userPhone = try {
-            jwtService.extractUsername(refreshToken)
-        } catch (e: ExpiredJwtException) {
+        val userId = try {
+            jwtService.extractUserId(refreshToken)
+        } catch (_: ExpiredJwtException) {
             throw InvalidTokenException("Refresh-токен истек")
         } ?: throw InvalidTokenException("Невалидный refresh-токен")
 
-        val userDetails = userDetailsService.loadUserByUsername(userPhone)
+        val user = userRepository.findById(userId)
+            ?: throw InvalidTokenException("Пользователь не найден")
 
-        if (!jwtService.isTokenValid(refreshToken, userDetails)) {
+        val userDetails = userDetailsService.loadUserByUsername(user.phone)
+        val principal = userDetails as UserPrincipal
+
+        if (!jwtService.isTokenValid(refreshToken, principal)) {
             throw InvalidTokenException("Невалидный refresh-токен")
         }
 
         val remainingTime = jwtService.getRemainingExpiration(refreshToken)
         tokenBlacklistService.addToBlacklist(refreshToken, remainingTime)
 
-        val newAccessToken = jwtService.generateAccessToken(userDetails)
-        val newRefreshToken = jwtService.generateRefreshToken(userDetails)
+        val newAccessToken = jwtService.generateAccessToken(principal)
+        val newRefreshToken = jwtService.generateRefreshToken(principal)
 
         return AuthResponse(newAccessToken, newRefreshToken)
     }
@@ -116,12 +124,10 @@ class AuthService(
         return try {
             val phoneUtil = PhoneNumberUtil.getInstance()
             val numberProto = phoneUtil.parse(phone, "RU")
-
             val dbFormat = numberProto.nationalNumber.toString()
             val displayFormat = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.E164)
-
             NormalizedPhone(forDb = dbFormat, forDisplay = displayFormat)
-        } catch (e: NumberParseException) {
+        } catch (_: NumberParseException) {
             throw BadCredentialsException("Некорректный формат номера телефона: $phone")
         }
     }

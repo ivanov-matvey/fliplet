@@ -1,5 +1,6 @@
 package dev.matvenoid.backend.application.service
 
+import dev.matvenoid.backend.application.security.UserPrincipal
 import dev.matvenoid.backend.domain.exception.InvalidTokenException
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -24,30 +25,40 @@ class JwtService {
     @Value($$"${jwt.refresh-token-expiration-ms}")
     private lateinit var refreshTokenExpiration: String
 
-    fun generateToken(userDetails: UserDetails, expiration: Long): String {
+    fun generateToken(userDetails: UserPrincipal, expiration: Long): String {
         return Jwts.builder()
-            .subject(userDetails.username)
+            .subject(userDetails.id.toString())
             .issuedAt(Date(System.currentTimeMillis()))
             .expiration(Date(System.currentTimeMillis() + expiration))
             .signWith(getSignInKey())
             .compact()
     }
 
-    fun generateAccessToken(userDetails: UserDetails): String {
+    fun generateAccessToken(userDetails: UserPrincipal): String {
         return generateToken(userDetails, accessTokenExpiration.toLong())
     }
 
-    fun generateRefreshToken(userDetails: UserDetails): String {
+    fun generateRefreshToken(userDetails: UserPrincipal): String {
         return generateToken(userDetails, refreshTokenExpiration.toLong())
     }
 
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
-        val username = extractUsername(token)
-        return (username == userDetails.username) && !isTokenExpired(token)
+        val userIdFromToken = extractUserId(token)
+
+        return if (userDetails is UserPrincipal && userIdFromToken != null) {
+            (userIdFromToken == userDetails.id) && !isTokenExpired(token)
+        } else {
+            false
+        }
     }
 
-    fun extractUsername(token: String): String? {
-        return extractClaim(token, Claims::getSubject)
+    fun extractUserId(token: String): UUID? {
+        val idString = extractClaim(token, Claims::getSubject)
+        return try {
+            UUID.fromString(idString)
+        } catch (_: IllegalArgumentException) {
+            null
+        }
     }
 
     private fun isTokenExpired(token: String): Boolean {

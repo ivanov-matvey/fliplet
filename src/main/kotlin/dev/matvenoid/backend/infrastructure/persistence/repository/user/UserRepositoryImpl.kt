@@ -5,6 +5,7 @@ import dev.matvenoid.backend.domain.repository.UserRepository
 import dev.matvenoid.backend.infrastructure.persistence.mapper.toDomain
 import dev.matvenoid.backend.infrastructure.persistence.mapper.toJpaEntity
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
 class UserRepositoryImpl(
@@ -17,6 +18,11 @@ class UserRepositoryImpl(
     override fun findByPhone(phone: String): User? {
         val userEntity = userJpaRepository.findByPhone(phone)
         return userEntity?.toDomain()
+    }
+
+    override fun findById(id: UUID): User? {
+        val userEntity = userJpaRepository.findById(id)
+        return userEntity.orElse(null)?.toDomain()
     }
 
     override fun save(user: User): User {

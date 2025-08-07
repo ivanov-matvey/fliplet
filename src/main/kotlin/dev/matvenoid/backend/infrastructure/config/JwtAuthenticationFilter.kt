@@ -1,21 +1,20 @@
 package dev.matvenoid.backend.infrastructure.config
 
+import dev.matvenoid.backend.application.security.UserPrincipal
 import dev.matvenoid.backend.application.service.JwtService
+import dev.matvenoid.backend.domain.repository.UserRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import kotlin.text.startsWith
-import kotlin.text.substring
 
 @Component
 class JwtAuthenticationFilter(
     private val jwtService: JwtService,
-    private val userDetailsService: UserDetailsService
+    private val userRepository: UserRepository
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -31,20 +30,29 @@ class JwtAuthenticationFilter(
         }
 
         val jwt = authHeader.substring(7)
-        val userPhone = jwtService.extractUsername(jwt)
+        val userId = jwtService.extractUserId(jwt)
 
-        if (userPhone != null && SecurityContextHolder.getContext().authentication == null) {
-            val userDetails = userDetailsService.loadUserByUsername(userPhone)
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                val authToken = UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.authorities
+        if (userId != null && SecurityContextHolder.getContext().authentication == null) {
+            val user = userRepository.findById(userId)
+            if (user != null) {
+                val userPrincipal = UserPrincipal(
+                    id = user.id,
+                    phone = user.phone,
+                    passwordHash = user.passwordHash,
+                    authoritiesCollection = emptyList()
                 )
-                SecurityContextHolder.getContext().authentication = authToken
+
+                if (jwtService.isTokenValid(jwt, userPrincipal)) {
+                    val authToken = UsernamePasswordAuthenticationToken(
+                        userPrincipal,
+                        null,
+                        userPrincipal.authorities
+                    )
+                    SecurityContextHolder.getContext().authentication = authToken
+                }
             }
         }
+
         filterChain.doFilter(request, response)
     }
 }
