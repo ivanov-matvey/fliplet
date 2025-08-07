@@ -1,5 +1,5 @@
 group = "dev.matvenoid"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -12,8 +12,17 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.spring.boot.starter)
 
+    implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.validation)
+    implementation(libs.postgresql)
+    implementation(libs.flyway.core)
+    implementation(libs.flyway.database.postgresql)
+
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
+    testImplementation(libs.testcontainers.core)
+    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.testcontainers.junit.jupiter)
 }
 
 java {
