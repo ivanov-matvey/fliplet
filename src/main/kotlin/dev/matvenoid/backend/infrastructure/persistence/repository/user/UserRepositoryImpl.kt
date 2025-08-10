@@ -11,9 +11,8 @@ import java.util.UUID
 class UserRepositoryImpl(
     private val userJpaRepository: UserJpaRepository
 ) : UserRepository {
-    override fun existsByPhone(phone: String): Boolean {
-        return userJpaRepository.existsByPhone(phone)
-    }
+    override fun existsByPhone(phone: String): Boolean =
+        userJpaRepository.existsByPhone(phone)
 
     override fun findByPhone(phone: String): User? {
         val userEntity = userJpaRepository.findByPhone(phone)
@@ -29,5 +28,13 @@ class UserRepositoryImpl(
         val entity = user.toJpaEntity()
         val saved = userJpaRepository.save(entity)
         return saved.toDomain()
+    }
+
+    override fun existsByUsernameCi(usernameCi: String) =
+        userJpaRepository.existsByUsernameCi(usernameCi)
+
+    override fun findByUsernameCi(usernameCi: String): User? {
+        val userEntity = userJpaRepository.findByUsernameCi(usernameCi)
+        return userEntity?.toDomain()
     }
 }

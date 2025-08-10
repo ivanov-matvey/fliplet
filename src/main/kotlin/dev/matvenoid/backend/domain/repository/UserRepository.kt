@@ -8,4 +8,6 @@ interface UserRepository {
     fun findByPhone(phone: String): User?
     fun findById(id: UUID): User?
     fun save(user: User): User
+    fun existsByUsernameCi(usernameCi: String): Boolean
+    fun findByUsernameCi(usernameCi: String): User?
 }

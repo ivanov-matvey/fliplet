@@ -8,25 +8,28 @@ class User private constructor(
     val id: UUID,
     val phone: String,
     val name: String,
-    val passwordHash: String,
+    val username: String,
     val avatarUrl: String?,
+    val passwordHash: String,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
 ) {
     companion object {
         fun create(
-            phone: String,
-            passwordHash: String,
+            username: String,
             name: String,
+            phone: String,
             avatarUrl: String?,
+            passwordHash: String,
         ): User {
             val now = OffsetDateTime.now(ZoneOffset.UTC)
             return User(
                 id = UUID.randomUUID(),
-                phone = phone,
-                passwordHash = passwordHash,
+                username = username,
                 name = name,
+                phone = phone,
                 avatarUrl = avatarUrl,
+                passwordHash = passwordHash,
                 createdAt = now,
                 updatedAt = now,
             )
@@ -34,18 +37,20 @@ class User private constructor(
 
         fun reconstitute(
             id: UUID,
+            username: String,
+            name: String,
             phone: String,
             passwordHash: String,
-            name: String,
             avatarUrl: String?,
             createdAt: OffsetDateTime,
             updatedAt: OffsetDateTime,
         ): User = User(
             id = id,
-            phone = phone,
+            username = username,
             name = name,
-            passwordHash = passwordHash,
+            phone = phone,
             avatarUrl = avatarUrl,
+            passwordHash = passwordHash,
             createdAt = createdAt,
             updatedAt=updatedAt,
         )

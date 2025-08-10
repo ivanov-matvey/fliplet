@@ -1,13 +1,13 @@
 package dev.matvenoid.backend.application.service
 
-import com.google.i18n.phonenumbers.NumberParseException
-import com.google.i18n.phonenumbers.PhoneNumberUtil
 import dev.matvenoid.backend.application.dto.AuthResponse
 import dev.matvenoid.backend.application.dto.LoginRequest
 import dev.matvenoid.backend.application.dto.RefreshTokenRequest
 import dev.matvenoid.backend.application.dto.RegistrationRequest
 import dev.matvenoid.backend.application.security.UserPrincipal
 import dev.matvenoid.backend.application.usecase.AuthUseCase
+import dev.matvenoid.backend.application.util.UsernameGenerator
+import dev.matvenoid.backend.application.util.normalizePhone
 import dev.matvenoid.backend.domain.exception.InvalidTokenException
 import dev.matvenoid.backend.domain.exception.UserAlreadyExistsException
 import dev.matvenoid.backend.domain.model.User
@@ -28,22 +28,25 @@ class AuthService(
     private val userDetailsService: UserDetailsService,
     private val authenticationManager: AuthenticationManager,
     private val tokenBlacklistService: TokenBlacklistService,
+    private val usernameGenerator: UsernameGenerator,
 ) : AuthUseCase {
 
-    private data class NormalizedPhone(val forDb: String, val forDisplay: String)
 
     override fun register(request: RegistrationRequest): AuthResponse {
-        val phone = normalizePhoneNumber(request.phone)
+        val phone = request.phone.normalizePhone()
 
         if (userRepository.existsByPhone(phone.forDb)) {
             throw UserAlreadyExistsException("Пользователь с телефоном ${phone.forDisplay} уже существует")
         }
 
+        val username = usernameGenerator.generate("user")
+
         val user = User.create(
-            phone = phone.forDb,
-            passwordHash = passwordEncoder.encode(request.password),
+            username = username,
             name = "Пользователь",
-            avatarUrl = null
+            phone = phone.forDb,
+            avatarUrl = null,
+            passwordHash = passwordEncoder.encode(request.password)
         )
 
         val savedUser = userRepository.save(user)
@@ -58,7 +61,7 @@ class AuthService(
     }
 
     override fun login(request: LoginRequest): AuthResponse {
-        val phone = normalizePhoneNumber(request.phone)
+        val phone = request.phone.normalizePhone()
 
         try {
             authenticationManager.authenticate(
@@ -118,17 +121,5 @@ class AuthService(
         val newRefreshToken = jwtService.generateRefreshToken(principal)
 
         return AuthResponse(newAccessToken, newRefreshToken)
-    }
-
-    private fun normalizePhoneNumber(phone: String): NormalizedPhone {
-        return try {
-            val phoneUtil = PhoneNumberUtil.getInstance()
-            val numberProto = phoneUtil.parse(phone, "RU")
-            val dbFormat = numberProto.nationalNumber.toString()
-            val displayFormat = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.E164)
-            NormalizedPhone(forDb = dbFormat, forDisplay = displayFormat)
-        } catch (_: NumberParseException) {
-            throw BadCredentialsException("Некорректный формат номера телефона: $phone")
-        }
     }
 }

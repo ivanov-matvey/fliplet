@@ -1,0 +1,9 @@
+package dev.matvenoid.backend.application.usecase
+
+import dev.matvenoid.backend.application.dto.UserResponse
+import java.util.UUID
+
+interface UserUseCase {
+    fun findById(id: UUID): UserResponse?
+    fun findByUsername(username: String): UserResponse?
+}
