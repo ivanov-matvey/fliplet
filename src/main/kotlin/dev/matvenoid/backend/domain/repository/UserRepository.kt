@@ -4,10 +4,10 @@ import dev.matvenoid.backend.domain.model.User
 import java.util.UUID
 
 interface UserRepository {
-    fun existsByPhone(phone: String): Boolean
-    fun findByPhone(phone: String): User?
+    fun existsByEmail(email: String): Boolean
+    fun findByEmail(email: String): User?
     fun findById(id: UUID): User?
     fun save(user: User): User
-    fun existsByUsernameCi(usernameCi: String): Boolean
-    fun findByUsernameCi(usernameCi: String): User?
+    fun existsByUsername(username: String): Boolean
+    fun findByUsername(username: String): User?
 }

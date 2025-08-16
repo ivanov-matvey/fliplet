@@ -6,8 +6,8 @@ import java.util.UUID
 
 class User private constructor(
     val id: UUID,
-    val phone: String,
-    val name: String,
+    val email: String,
+    val name: String?,
     val username: String,
     val avatarUrl: String?,
     val passwordHash: String,
@@ -17,8 +17,8 @@ class User private constructor(
     companion object {
         fun create(
             username: String,
-            name: String,
-            phone: String,
+            name: String?,
+            email: String,
             avatarUrl: String?,
             passwordHash: String,
         ): User {
@@ -27,7 +27,7 @@ class User private constructor(
                 id = UUID.randomUUID(),
                 username = username,
                 name = name,
-                phone = phone,
+                email = email,
                 avatarUrl = avatarUrl,
                 passwordHash = passwordHash,
                 createdAt = now,
@@ -38,8 +38,8 @@ class User private constructor(
         fun reconstitute(
             id: UUID,
             username: String,
-            name: String,
-            phone: String,
+            name: String?,
+            email: String,
             passwordHash: String,
             avatarUrl: String?,
             createdAt: OffsetDateTime,
@@ -48,7 +48,7 @@ class User private constructor(
             id = id,
             username = username,
             name = name,
-            phone = phone,
+            email = email,
             avatarUrl = avatarUrl,
             passwordHash = passwordHash,
             createdAt = createdAt,

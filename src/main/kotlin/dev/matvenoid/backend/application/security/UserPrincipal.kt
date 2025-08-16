@@ -6,13 +6,13 @@ import java.util.UUID
 
 class UserPrincipal(
     val id: UUID,
-    private val phone: String,
+    private val email: String,
     private val passwordHash: String,
     private val authoritiesCollection: Collection<GrantedAuthority>,
 ) : UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> = authoritiesCollection
     override fun getPassword(): String = passwordHash
-    override fun getUsername(): String = phone
+    override fun getUsername(): String = email
     override fun isAccountNonExpired(): Boolean = true
     override fun isAccountNonLocked(): Boolean = true
     override fun isCredentialsNonExpired(): Boolean = true

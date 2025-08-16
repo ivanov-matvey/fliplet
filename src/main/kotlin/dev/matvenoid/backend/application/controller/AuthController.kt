@@ -4,6 +4,7 @@ import dev.matvenoid.backend.application.dto.AuthResponse
 import dev.matvenoid.backend.application.dto.LoginRequest
 import dev.matvenoid.backend.application.dto.RefreshTokenRequest
 import dev.matvenoid.backend.application.dto.RegistrationRequest
+import dev.matvenoid.backend.application.dto.VerifyRequest
 import dev.matvenoid.backend.application.service.AuthService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -22,6 +23,13 @@ class AuthController(
     ): ResponseEntity<AuthResponse> {
         val response = authService.register(request)
         return ResponseEntity(response, HttpStatus.CREATED)
+    }
+
+    @PostMapping("/verify-email")
+    fun verify(
+        @RequestBody @Valid request: VerifyRequest
+    ): ResponseEntity<AuthResponse> {
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build()
     }
 
     @PostMapping("/login")

@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface UserJpaRepository : JpaRepository<UserJpaEntity, UUID> {
-    fun existsByPhone(phone: String): Boolean
-    fun findByPhone(phone: String): UserJpaEntity?
-    fun existsByUsernameCi(usernameCi: String): Boolean
-    fun findByUsernameCi(usernameCi: String): UserJpaEntity?
+    fun existsByEmail(email: String): Boolean
+    fun findByEmail(email: String): UserJpaEntity?
+    fun existsByUsername(username: String): Boolean
+    fun findByUsername(username: String): UserJpaEntity?
 }

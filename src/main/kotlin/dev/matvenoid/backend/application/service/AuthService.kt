@@ -7,12 +7,10 @@ import dev.matvenoid.backend.application.dto.RegistrationRequest
 import dev.matvenoid.backend.application.security.UserPrincipal
 import dev.matvenoid.backend.application.usecase.AuthUseCase
 import dev.matvenoid.backend.application.util.UsernameGenerator
-import dev.matvenoid.backend.application.util.normalizePhone
-import dev.matvenoid.backend.domain.exception.InvalidTokenException
 import dev.matvenoid.backend.domain.exception.UserAlreadyExistsException
 import dev.matvenoid.backend.domain.model.User
 import dev.matvenoid.backend.domain.repository.UserRepository
-import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.JwtException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -33,25 +31,25 @@ class AuthService(
 
 
     override fun register(request: RegistrationRequest): AuthResponse {
-        val phone = request.phone.normalizePhone()
-
-        if (userRepository.existsByPhone(phone.forDb)) {
-            throw UserAlreadyExistsException("Пользователь с телефоном ${phone.forDisplay} уже существует")
+        if (userRepository.existsByEmail(request.email)) {
+            throw UserAlreadyExistsException(
+                "Пользователь с электронной почтой ${request.email} уже существует"
+            )
         }
 
-        val username = usernameGenerator.generate("user")
+        val username = usernameGenerator.generate(request.email)
 
         val user = User.create(
             username = username,
-            name = "Пользователь",
-            phone = phone.forDb,
+            name = null,
+            email = request.email,
             avatarUrl = null,
             passwordHash = passwordEncoder.encode(request.password)
         )
 
         val savedUser = userRepository.save(user)
 
-        val userDetails = userDetailsService.loadUserByUsername(savedUser.phone)
+        val userDetails = userDetailsService.loadUserByUsername(savedUser.email)
         val principal = userDetails as UserPrincipal
 
         val accessToken = jwtService.generateAccessToken(principal)
@@ -61,20 +59,18 @@ class AuthService(
     }
 
     override fun login(request: LoginRequest): AuthResponse {
-        val phone = request.phone.normalizePhone()
-
         try {
             authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(
-                    phone.forDb,
+                    request.email,
                     request.password
                 )
             )
         } catch (_: Exception) {
-            throw BadCredentialsException("Неверные учетные данные")
+            throw BadCredentialsException("Неверный адрес электронной почты или пароль")
         }
 
-        val userDetails = userDetailsService.loadUserByUsername(phone.forDb)
+        val userDetails = userDetailsService.loadUserByUsername(request.email)
         val principal = userDetails as UserPrincipal
 
         val accessToken = jwtService.generateAccessToken(principal)
@@ -85,34 +81,21 @@ class AuthService(
 
     override fun logout(request: RefreshTokenRequest) {
         val refreshToken = request.refreshToken
-        try {
-            val remainingTime = jwtService.getRemainingExpiration(refreshToken)
-            tokenBlacklistService.addToBlacklist(refreshToken, remainingTime)
-        } catch (_: Exception) {}
+        val remainingTime = jwtService.getRemainingExpiration(refreshToken)
+        tokenBlacklistService.addToBlacklist(refreshToken, remainingTime)
     }
 
     override fun refresh(request: RefreshTokenRequest): AuthResponse {
         val refreshToken = request.refreshToken
 
-        if (tokenBlacklistService.isBlacklisted(refreshToken)) {
-            throw InvalidTokenException("Токен недействителен")
-        }
-
-        val userId = try {
-            jwtService.extractUserId(refreshToken)
-        } catch (_: ExpiredJwtException) {
-            throw InvalidTokenException("Refresh-токен истек")
-        } ?: throw InvalidTokenException("Невалидный refresh-токен")
+        val userId = jwtService.extractUserId(refreshToken)
+            ?: throw JwtException("Не удалось извлечь ID пользователя")
 
         val user = userRepository.findById(userId)
-            ?: throw InvalidTokenException("Пользователь не найден")
+            ?: throw JwtException("Пользователь не найден")
 
-        val userDetails = userDetailsService.loadUserByUsername(user.phone)
+        val userDetails = userDetailsService.loadUserByUsername(user.email)
         val principal = userDetails as UserPrincipal
-
-        if (!jwtService.isTokenValid(refreshToken, principal)) {
-            throw InvalidTokenException("Невалидный refresh-токен")
-        }
 
         val remainingTime = jwtService.getRemainingExpiration(refreshToken)
         tokenBlacklistService.addToBlacklist(refreshToken, remainingTime)

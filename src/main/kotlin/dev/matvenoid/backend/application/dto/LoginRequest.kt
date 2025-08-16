@@ -1,13 +1,13 @@
 package dev.matvenoid.backend.application.dto
 
-import dev.matvenoid.backend.application.validation.PhoneNumber
+import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class LoginRequest(
-    @field:NotBlank(message = "Телефон не заполнен")
-    @field:PhoneNumber(message = "Некорректный номер телефона")
-    val phone: String,
+    @field:NotBlank(message = "Адрес электронной почты не заполнен")
+    @field:Email(message = "Некорректный адрес электронной почты")
+    val email: String,
 
     @field:NotBlank(message = "Пароль не заполнен")
     @field:Size(

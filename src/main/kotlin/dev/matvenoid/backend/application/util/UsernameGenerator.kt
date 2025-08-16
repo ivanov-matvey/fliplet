@@ -17,30 +17,32 @@ class UsernameGenerator(
     private val slugRegex   = Regex("[^a-z0-9_-]")
     private val dashCleanup = Regex("-+")
 
-    fun generate(baseName: String): String {
-        val rawBase = baseName
+
+    fun generate(email: String): String {
+        val localPart = email.substringBefore('@')
+        val slugBase = localPart
             .lowercase()
             .replace(" ", "-")
             .replace(slugRegex, "")
             .replace(dashCleanup, "-")
             .trim('-')
-            .ifEmpty { "user" }
+            .let {
+                when {
+                    it.length < 3      -> "user"
+                    it in reserved     -> "user-$it"
+                    else               -> it
+                }
+            }
 
-        val base = when {
-            rawBase.length < 3 -> "user"
-            rawBase in reserved -> "user-$rawBase"
-            else -> rawBase
+        var candidate = slugBase.take(32)
+        var suffix = 0
+
+        while (candidate in reserved || userRepository.existsByUsername(candidate)) {
+            suffix += 1
+            val tail = suffix.toString()
+            val maxBaseLen = 32 - tail.length
+            candidate = slugBase.take(maxBaseLen) + tail
         }
-
-        var suffix   = 0
-        var candidate: String
-        do {
-            candidate = if (suffix == 0) base else "$base$suffix"
-            suffix++
-        } while (
-            candidate in reserved ||
-            userRepository.existsByUsernameCi(candidate.lowercase())
-        )
 
         return candidate
     }

@@ -6,8 +6,6 @@ import jakarta.persistence.Table
 import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.GeneratedValue
-import jakarta.persistence.PrePersist
-import jakarta.persistence.PreUpdate
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.UpdateTimestamp
@@ -25,17 +23,14 @@ data class UserJpaEntity(
     @Column(updatable = false, nullable = false)
     val id: UUID? = null,
 
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, columnDefinition = "citext")
     var username: String,
 
-    @Column(nullable = false, unique = true, length = 32)
-    var usernameCi: String,
+    @Column(nullable = true, length = 100)
+    var name: String?,
 
-    @Column(nullable = false, length = 100)
-    val name: String,
-
-    @Column(nullable = false, unique = true, length = 10)
-    var phone: String,
+    @Column(nullable = false, unique = true, columnDefinition = "email")
+    var email: String,
 
     @Column(nullable = true, columnDefinition = "TEXT")
     var avatarUrl: String? = null,
@@ -50,10 +45,4 @@ data class UserJpaEntity(
     @UpdateTimestamp
     @Column(nullable = false)
     val updatedAt: OffsetDateTime,
-) {
-    @PrePersist
-    @PreUpdate
-    fun normalize() {
-        usernameCi = username.lowercase()
-    }
-}
+)

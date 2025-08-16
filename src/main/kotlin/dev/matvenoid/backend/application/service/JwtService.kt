@@ -1,8 +1,8 @@
 package dev.matvenoid.backend.application.service
 
 import dev.matvenoid.backend.application.security.UserPrincipal
-import dev.matvenoid.backend.domain.exception.InvalidTokenException
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
@@ -89,7 +89,7 @@ class JwtService {
 
     fun getRemainingExpiration(token: String): Duration {
         val expirationDate = extractExpiration(token)
-            ?: throw InvalidTokenException("Токен не содержит срока действия")
+            ?: throw JwtException("Не удалось извлечь дату истечения срока действия из токена")
         val remainingMs = expirationDate.time - System.currentTimeMillis()
         return Duration.ofMillis(if (remainingMs > 0) remainingMs else 0)
     }

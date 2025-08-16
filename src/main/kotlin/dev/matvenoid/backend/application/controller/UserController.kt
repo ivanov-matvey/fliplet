@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 class UserController(
     private val userService: UserService,
 ) {
@@ -27,6 +27,8 @@ class UserController(
     @GetMapping("/{username}")
     fun getByUsername(
         @PathVariable username: String
-    ): ResponseEntity<UserResponse> =
-        ResponseEntity.ok(userService.findByUsername(username))
+    ): ResponseEntity<UserResponse> {
+        val user = userService.findByUsername(username)
+        return ResponseEntity(user, HttpStatus.OK)
+    }
 }

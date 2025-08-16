@@ -13,12 +13,14 @@ class UserDetailsServiceImpl(
 ) : UserDetailsService {
 
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = userRepository.findByPhone(username)
-            ?: throw UsernameNotFoundException("Пользователь с телефоном $username не найден")
+        val user = userRepository.findByEmail(username)
+            ?: throw UsernameNotFoundException(
+                "Пользователь с электронной почтой $username не найден"
+            )
 
         return UserPrincipal(
             id = user.id,
-            phone = user.phone,
+            email = user.email,
             passwordHash = user.passwordHash,
             authoritiesCollection = emptyList()
         )

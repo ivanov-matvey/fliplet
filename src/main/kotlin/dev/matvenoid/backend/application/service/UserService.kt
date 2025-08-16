@@ -2,7 +2,6 @@ package dev.matvenoid.backend.application.service
 
 import dev.matvenoid.backend.application.dto.UserResponse
 import dev.matvenoid.backend.application.usecase.UserUseCase
-import dev.matvenoid.backend.application.util.normalizePhone
 import dev.matvenoid.backend.domain.exception.UserNotFoundException
 import dev.matvenoid.backend.domain.repository.UserRepository
 import org.springframework.stereotype.Service
@@ -20,20 +19,20 @@ class UserService(
             id = user.id,
             username = user.username,
             name = user.name,
-            phone = user.phone.normalizePhone().forDisplay,
+            email = user.email,
             avatarUrl = user.avatarUrl,
         )
     }
 
     override fun findByUsername(username: String): UserResponse? {
-        val user = userRepository.findByUsernameCi(username.lowercase())
+        val user = userRepository.findByUsername(username)
             ?: throw UserNotFoundException("Пользователь $username не найден")
 
         return UserResponse(
             id = user.id,
             username = user.username,
             name = user.name,
-            phone = user.phone.normalizePhone().forDisplay,
+            email = user.email,
             avatarUrl = user.avatarUrl,
             )
     }
