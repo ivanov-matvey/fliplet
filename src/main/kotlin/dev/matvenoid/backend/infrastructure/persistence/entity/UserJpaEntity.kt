@@ -5,11 +5,9 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.util.UUID
 import jakarta.persistence.Column
-import jakarta.persistence.GeneratedValue
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.UpdateTimestamp
-import org.hibernate.annotations.UuidGenerator
 import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 
@@ -17,11 +15,9 @@ import java.time.OffsetDateTime
 @Table(name = "users")
 data class UserJpaEntity(
     @Id
-    @GeneratedValue
-    @UuidGenerator
     @JdbcTypeCode(SqlTypes.UUID)
     @Column(updatable = false, nullable = false)
-    val id: UUID? = null,
+    val id: UUID,
 
     @Column(nullable = false, columnDefinition = "citext")
     var username: String,
@@ -37,6 +33,9 @@ data class UserJpaEntity(
 
     @Column(nullable = false, columnDefinition = "TEXT")
     var passwordHash: String,
+
+    @Column(nullable = false)
+    var isEmailVerified: Boolean = false,
 
     @CreationTimestamp
     @Column(nullable = false)

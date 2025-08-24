@@ -4,6 +4,7 @@ import dev.matvenoid.backend.application.dto.UserResponse
 import dev.matvenoid.backend.application.usecase.UserUseCase
 import dev.matvenoid.backend.domain.exception.UserNotFoundException
 import dev.matvenoid.backend.domain.repository.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -11,10 +12,17 @@ import java.util.UUID
 class UserService(
     private val userRepository: UserRepository,
 ) : UserUseCase {
-    override fun findById(id: UUID): UserResponse? {
-        val user = userRepository.findById(id)
-            ?: throw UserNotFoundException("Пользователь не найден")
+    private val logger = LoggerFactory.getLogger(UserService::class.java)
 
+    override fun findById(id: UUID): UserResponse? {
+        logger.info("Fetching user by ID: {}", id)
+
+        val user = userRepository.findById(id) ?: run {
+            logger.warn("User not found by ID: {}", id)
+            throw UserNotFoundException("Пользователь не найден")
+        }
+
+        logger.info("User {} found, preparing response", id)
         return UserResponse(
             id = user.id,
             username = user.username,
@@ -25,15 +33,20 @@ class UserService(
     }
 
     override fun findByUsername(username: String): UserResponse? {
-        val user = userRepository.findByUsername(username)
-            ?: throw UserNotFoundException("Пользователь $username не найден")
+        logger.info("Fetching user by username: {}", username)
 
+        val user = userRepository.findByUsername(username) ?: run {
+            logger.warn("User not found by username: {}", username)
+            throw UserNotFoundException("Пользователь $username не найден")
+        }
+
+        logger.info("User {} found, preparing response", username)
         return UserResponse(
             id = user.id,
             username = user.username,
             name = user.name,
             email = user.email,
             avatarUrl = user.avatarUrl,
-            )
+        )
     }
 }

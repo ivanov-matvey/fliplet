@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title th:text="#{mail.verification.subject}">Подтверждение регистрации</title>
+</head>
+<body>
+    <h1>Добро пожаловать на Fliplet!</h1>
+    <p>Ваш код для подтверждения регистрации:</p>
+    <h2 th:text="${verificationCode}">123456</h2>
+    <p>Если вы не регистрировались, просто проигнорируйте это письмо.</p>
+</body>
+</html>

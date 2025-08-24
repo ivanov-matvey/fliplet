@@ -21,73 +21,63 @@ import kotlin.to
 class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidation(e: MethodArgumentNotValidException): ProblemDetail {
-        val errors = e.bindingResult.allErrors
-            .mapNotNull { error ->
-                (error as? FieldError)?.let { it.field to (it.defaultMessage ?: "Invalid value") }
+    fun handleValidationException(e: MethodArgumentNotValidException): ProblemDetail {
+        val errors = e.bindingResult
+            .allErrors
+            .mapNotNull {
+                (it as? FieldError)?.let {
+                    error -> error.field to (error.defaultMessage ?: "Invalid value")
+                }
             }
             .toMap()
 
-        val problemDetail = ProblemDetail.forStatusAndDetail(
+        return ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST,
             "Одно или несколько полей не прошли валидацию"
-        )
-        problemDetail.title = "Validation Failed"
-        problemDetail.setProperty("errors", errors)
-
-        return problemDetail
+        ).apply {
+            title = "Validation Failed"
+            setProperty("errors", errors)
+        }
     }
 
     @ExceptionHandler(UserAlreadyExistsException::class)
-    fun handleUserAlreadyExists(e: UserAlreadyExistsException): ProblemDetail {
-        val problemDetail = ProblemDetail.forStatusAndDetail(
+    fun handleUserAlreadyExistsException(e: UserAlreadyExistsException): ProblemDetail =
+        ProblemDetail.forStatusAndDetail(
             HttpStatus.CONFLICT,
             e.message ?: "Пользователь с такими данными уже существует"
-        )
-        problemDetail.title = "User Already Exists"
-        return problemDetail
-    }
+        ).apply { title = "User Already Exists" }
 
     @ExceptionHandler(UserNotFoundException::class)
-    fun handleUserNotFound(e: UserNotFoundException): ProblemDetail {
-        val problemDetail = ProblemDetail.forStatusAndDetail(
+    fun handleUserNotFoundException(e: UserNotFoundException): ProblemDetail =
+        ProblemDetail.forStatusAndDetail(
             HttpStatus.NOT_FOUND,
             e.message ?: "Пользователь не найден"
-        )
-        problemDetail.title = "User not found"
-        return problemDetail
-    }
+        ).apply { title = "User Not Found" }
 
-    @ExceptionHandler(BadCredentialsException::class, UsernameNotFoundException::class)
-    fun handleAuthenticationFailure(e: Exception): ProblemDetail {
-        val problemDetail = ProblemDetail.forStatusAndDetail(
+    @ExceptionHandler(
+        BadCredentialsException::class,
+        UsernameNotFoundException::class
+    )
+    fun handleAuthenticationException(e: Exception): ProblemDetail =
+        ProblemDetail.forStatusAndDetail(
             HttpStatus.UNAUTHORIZED,
             e.message ?: "Неверный адрес электронной почты или пароль"
-        )
-        problemDetail.title = "Authentication Failed"
-        return problemDetail
-    }
+        ).apply { title = "Authentication Failed" }
 
     @ExceptionHandler(
         JwtSecurityException::class,
         JwtException::class
     )
-    fun handleTokenErrors(e: Exception): ProblemDetail {
-        val problemDetail = ProblemDetail.forStatusAndDetail(
+    fun handleTokenException(e: Exception): ProblemDetail =
+        ProblemDetail.forStatusAndDetail(
             HttpStatus.UNAUTHORIZED,
             e.message ?: "Сессия истекла или токен недействителен"
-        )
-        problemDetail.title = "Invalid Token"
-        return problemDetail
-    }
+        ).apply { title = "Invalid Token" }
 
     @ExceptionHandler(Exception::class)
-    fun handleAllUncaughtException(e: Exception): ProblemDetail {
-        val problemDetail = ProblemDetail.forStatusAndDetail(
+    fun handleUnexpectedException(e: Exception): ProblemDetail =
+        ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
             e.message ?: "Произошла непредвиденная ошибка на сервере"
-        )
-        problemDetail.title = "Internal Server Error"
-        return problemDetail
-    }
+        ).apply { title = "Internal Server Error" }
 }

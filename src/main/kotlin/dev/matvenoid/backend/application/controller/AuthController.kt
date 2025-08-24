@@ -4,6 +4,7 @@ import dev.matvenoid.backend.application.dto.AuthResponse
 import dev.matvenoid.backend.application.dto.LoginRequest
 import dev.matvenoid.backend.application.dto.RefreshTokenRequest
 import dev.matvenoid.backend.application.dto.RegistrationRequest
+import dev.matvenoid.backend.application.dto.ResendVerificationCodeRequest
 import dev.matvenoid.backend.application.dto.VerifyRequest
 import dev.matvenoid.backend.application.service.AuthService
 import jakarta.validation.Valid
@@ -21,15 +22,24 @@ class AuthController(
     fun register(
         @RequestBody @Valid request: RegistrationRequest
     ): ResponseEntity<AuthResponse> {
-        val response = authService.register(request)
-        return ResponseEntity(response, HttpStatus.CREATED)
+        authService.register(request)
+        return ResponseEntity( HttpStatus.ACCEPTED)
     }
 
     @PostMapping("/verify-email")
     fun verify(
         @RequestBody @Valid request: VerifyRequest
     ): ResponseEntity<AuthResponse> {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build()
+        authService.verifyEmail(request)
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @PostMapping("/resend-verification-code")
+    fun resendVerificationCode(
+        @RequestBody @Valid request: ResendVerificationCodeRequest
+    ): ResponseEntity<Void> {
+        authService.resendVerificationCode(request)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
     @PostMapping("/login")

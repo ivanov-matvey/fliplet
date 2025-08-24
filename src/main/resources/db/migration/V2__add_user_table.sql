@@ -10,6 +10,7 @@ CREATE TABLE users (
     email email NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     avatar_url TEXT NULL,
+    is_email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL
 );

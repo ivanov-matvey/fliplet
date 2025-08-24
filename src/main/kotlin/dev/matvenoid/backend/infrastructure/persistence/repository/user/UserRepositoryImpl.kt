@@ -5,6 +5,7 @@ import dev.matvenoid.backend.domain.repository.UserRepository
 import dev.matvenoid.backend.infrastructure.persistence.mapper.toDomain
 import dev.matvenoid.backend.infrastructure.persistence.mapper.toJpaEntity
 import org.springframework.stereotype.Repository
+import java.time.OffsetDateTime
 import java.util.UUID
 
 @Repository
@@ -36,5 +37,14 @@ class UserRepositoryImpl(
     override fun findByUsername(username: String): User? {
         val userEntity = userJpaRepository.findByUsername(username)
         return userEntity?.toDomain()
+    }
+
+    override fun findAllUnverifiedCreatedBefore(cutoff: OffsetDateTime): List<User> {
+        return userJpaRepository.findByIsEmailVerifiedFalseAndCreatedAtBefore(cutoff).map { it.toDomain() }
+    }
+
+    override fun delete(user: User) {
+        val entity = user.toJpaEntity()
+        userJpaRepository.delete(entity)
     }
 }

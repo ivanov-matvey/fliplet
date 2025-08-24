@@ -14,9 +14,12 @@ kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", vers
 spring-boot-starter = { group = "org.springframework.boot", name = "spring-boot-starter", version.ref = "springFramework" }
 spring-boot-starter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web", version.ref = "springFramework" }
 spring-boot-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "springFramework" }
+spring-boot-starter-oauth2-resource-server = { group = "org.springframework.boot", name = "spring-boot-starter-oauth2-resource-server", version.ref = "springFramework" }
 spring-boot-starter-data-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa", version.ref = "springFramework" }
 spring-boot-starter-data-redis = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis", version.ref = "springFramework" }
 spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation", version.ref = "springFramework" }
+spring-boot-starter-mail = { group = "org.springframework.boot", name = "spring-boot-starter-mail", version.ref = "springFramework" }
+spring-boot-starter-thymeleaf = { group = "org.springframework.boot", name = "spring-boot-starter-thymeleaf", version.ref = "springFramework" }
 postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flywaydb" }
 flyway-database-postgresql = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flywaydb" }

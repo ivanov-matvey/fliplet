@@ -17,6 +17,8 @@ services:
       - "${APP_PORT}:8000"
     networks:
       - fliplet-network
+    volumes:
+      - ./logs:/app/logs
 
   fliplet-postgres:
     image: postgres:17

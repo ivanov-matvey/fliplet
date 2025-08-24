@@ -40,3 +40,6 @@ out/
 
 ### Environment ###
 .env
+
+### Logs ###
+logs/

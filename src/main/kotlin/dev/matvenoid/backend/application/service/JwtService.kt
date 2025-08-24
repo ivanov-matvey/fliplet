@@ -1,20 +1,22 @@
 package dev.matvenoid.backend.application.service
 
-import dev.matvenoid.backend.application.security.UserPrincipal
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import java.time.Duration
+import java.time.Instant
 import java.util.*
 import javax.crypto.SecretKey
 
 @Service
 class JwtService {
+    private val logger = LoggerFactory.getLogger(JwtService::class.java)
 
     @Value($$"${jwt.secret}")
     private lateinit var secretKey: String
@@ -25,49 +27,57 @@ class JwtService {
     @Value($$"${jwt.refresh-token-expiration-ms}")
     private lateinit var refreshTokenExpiration: String
 
-    fun generateToken(userDetails: UserPrincipal, expiration: Long): String {
+    private val signInKey: SecretKey by lazy {
+        val keyBytes = Decoders.BASE64.decode(secretKey)
+        Keys.hmacShaKeyFor(keyBytes)
+    }
+
+    fun generateToken(userId: UUID, expiration: Long): String {
         return Jwts.builder()
-            .subject(userDetails.id.toString())
+            .subject(userId.toString())
             .issuedAt(Date(System.currentTimeMillis()))
             .expiration(Date(System.currentTimeMillis() + expiration))
-            .signWith(getSignInKey())
+            .signWith(signInKey)
             .compact()
     }
 
-    fun generateAccessToken(userDetails: UserPrincipal): String {
-        return generateToken(userDetails, accessTokenExpiration.toLong())
+    fun generateAccessToken(userId: UUID): String {
+        logger.info("Generating new access token for user ID: {}", userId)
+        return generateToken(userId, accessTokenExpiration.toLong())
     }
 
-    fun generateRefreshToken(userDetails: UserPrincipal): String {
-        return generateToken(userDetails, refreshTokenExpiration.toLong())
+    fun generateRefreshToken(userId: UUID): String {
+        logger.info("Generating new refresh token for user ID: {}", userId)
+        return generateToken(userId, refreshTokenExpiration.toLong())
     }
 
-    fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
-        val userIdFromToken = extractUserId(token)
-
-        return if (userDetails is UserPrincipal && userIdFromToken != null) {
-            (userIdFromToken == userDetails.id) && !isTokenExpired(token)
-        } else {
-            false
+    fun isTokenValid(token: String, userId: UUID): Boolean {
+        try {
+            val claims = extractAllClaims(token)
+            val notExpired = claims.expiration.after(Date())
+            val subjectOk  = UUID.fromString(claims.subject) == userId
+            val valid = notExpired && subjectOk
+            logger.debug("Token valid={} (notExpired={}, subjectOk={}) for {}", valid, notExpired, subjectOk, userId)
+            return valid
+        } catch (e: JwtException) {
+            logger.warn("JWT validation failed: {}", e.message)
+            return false
         }
     }
 
     fun extractUserId(token: String): UUID? {
-        val idString = extractClaim(token, Claims::getSubject)
         return try {
-            UUID.fromString(idString)
-        } catch (_: IllegalArgumentException) {
+            val id = UUID.fromString(extractClaim(token, Claims::getSubject))
+            logger.debug("Extracted userId {} from token", id)
+            id
+        } catch (e: Exception) {
+            logger.warn("Could not extract user ID from token: {}", e.message)
             null
         }
     }
 
-    private fun isTokenExpired(token: String): Boolean {
-        return extractExpiration(token)?.before(Date()) ?: true
-    }
-
-    private fun extractExpiration(token: String): Date? {
-        return extractClaim(token, Claims::getExpiration)
-    }
+    private fun extractExpiration(token: String): Date? =
+        extractClaim(token, Claims::getExpiration)
 
     private fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
         val claims = extractAllClaims(token)
@@ -76,15 +86,10 @@ class JwtService {
 
     private fun extractAllClaims(token: String): Claims {
         return Jwts.parser()
-            .verifyWith(getSignInKey())
+            .verifyWith(signInKey)
             .build()
             .parseSignedClaims(token)
             .payload
-    }
-
-    private fun getSignInKey(): SecretKey {
-        val keyBytes = Decoders.BASE64.decode(secretKey)
-        return Keys.hmacShaKeyFor(keyBytes)
     }
 
     fun getRemainingExpiration(token: String): Duration {
@@ -92,5 +97,16 @@ class JwtService {
             ?: throw JwtException("Не удалось извлечь дату истечения срока действия из токена")
         val remainingMs = expirationDate.time - System.currentTimeMillis()
         return Duration.ofMillis(if (remainingMs > 0) remainingMs else 0)
+    }
+
+    fun parseAsJwt(token: String): Jwt {
+        val claims = extractAllClaims(token)
+        return Jwt(
+            token,
+            Instant.ofEpochMilli(claims.issuedAt.time),
+            Instant.ofEpochMilli(claims.expiration.time),
+            mapOf("alg" to "HS512"),
+            claims
+        )
     }
 }
