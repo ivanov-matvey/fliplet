@@ -3,6 +3,7 @@ package dev.matvenoid.backend.application.service
 import dev.matvenoid.backend.application.dto.*
 import dev.matvenoid.backend.application.usecase.AuthUseCase
 import dev.matvenoid.backend.application.util.UsernameGenerator
+import dev.matvenoid.backend.application.service.VerificationType.*
 import dev.matvenoid.backend.domain.exception.UserAlreadyExistsException
 import dev.matvenoid.backend.domain.exception.UserNotFoundException
 import dev.matvenoid.backend.domain.model.User
@@ -49,7 +50,7 @@ class AuthService(
         logger.info("User {} (ID: {}) successfully saved to database.", savedUser.email, savedUser.id)
 
         val code = generateVerificationCode()
-        emailVerificationService.saveVerificationCode(savedUser.email, code)
+        emailVerificationService.saveVerificationCode(REGISTER, savedUser.email, code)
         emailService.sendVerificationEmail(savedUser.email, code)
 
         logger.info("Successfully registered user {}. Verification email dispatch initiated.", savedUser.email)
@@ -59,26 +60,71 @@ class AuthService(
     override fun verifyEmail(request: VerifyRequest) {
         logger.info("Attempting to verify email: {}", request.email)
 
-        if (!emailVerificationService.isCodeValid(request.email, request.code)) {
-            logger.warn("Invalid verification code for email: {}", request.email)
-            throw BadCredentialsException("Неверный или истекший код подтверждения")
+        if (emailVerificationService.isCodeValid(REGISTER, request.email, request.code)) {
+
+            val user = findUnverifiedUserByEmailOrThrow(request.email)
+            userRepository.save(user.copy(isEmailVerified = true))
+            emailVerificationService.deleteVerificationCode(REGISTER, request.email)
+
+            logger.info("Registration email verified for {}", request.email)
+            return
         }
 
-        val user = findUnverifiedUserByEmailOrThrow(request.email)
-        userRepository.save(user.copy(isEmailVerified = true))
-        emailVerificationService.deleteVerificationCode(request.email)
-        logger.info("Email successfully verified for user: {}", request.email)
+        if (emailVerificationService.isCodeValid(CHANGE, request.email, request.code)) {
+
+            val user = userRepository.findByPendingEmail(request.email)
+                ?: throw BadCredentialsException("Запрос на смену e-mail не найден")
+
+            userRepository.save(
+                user.copy(
+                    email = user.pendingEmail!!,
+                    pendingEmail = null,
+                    pendingEmailRequestedAt = null,
+                )
+            )
+            emailVerificationService.deleteVerificationCode(CHANGE, request.email)
+
+            logger.info("Email successfully changed for user {}", user.id)
+            return
+        }
+
+        logger.warn("Invalid verification code for email: {}", request.email)
+        throw BadCredentialsException("Неверный или истекший код подтверждения")
     }
 
     @Transactional(readOnly = true)
     override fun resendVerificationCode(request: ResendVerificationCodeRequest) {
         logger.info("Resending verification code for email: {}", request.email)
 
-        findUnverifiedUserByEmailOrThrow(request.email)
+        val email = request.email.lowercase()
 
-        val code = generateVerificationCode()
-        emailVerificationService.saveVerificationCode(request.email, code)
-        emailService.sendVerificationEmail(request.email, code)
+        val userByEmail = userRepository.findByEmail(email)
+        val userByPending = userRepository.findByPendingEmail(email)
+
+        when {
+            userByEmail?.isEmailVerified == true ->
+                throw IllegalStateException("E-mail уже подтверждён")
+
+            userByPending != null -> {
+                if (userByEmail != null) {
+                    logger.warn("Registration failed for email {}: user already exists.", request.email)
+                    throw UserAlreadyExistsException("Неверный адрес электронной почты")
+                }
+
+                val code = generateVerificationCode()
+                emailVerificationService.saveVerificationCode(CHANGE, email, code)
+                emailService.sendVerificationEmail(email, code)
+            }
+
+            userByEmail != null -> {
+                val code = generateVerificationCode()
+                emailVerificationService.saveVerificationCode(REGISTER, email, code)
+                emailService.sendVerificationEmail(email, code)
+            }
+
+            else -> throw UserNotFoundException("Пользователь не найден")
+        }
+
         logger.info("Verification code successfully re-sent for email: {}", request.email)
     }
 

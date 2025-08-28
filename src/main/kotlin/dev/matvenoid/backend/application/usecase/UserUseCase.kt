@@ -6,4 +6,5 @@ import java.util.UUID
 interface UserUseCase {
     fun findById(id: UUID): UserResponse?
     fun findByUsername(username: String): UserResponse?
+    fun updateEmail(id: UUID, newEmail: String)
 }

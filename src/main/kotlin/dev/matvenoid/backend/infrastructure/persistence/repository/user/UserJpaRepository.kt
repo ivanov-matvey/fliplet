@@ -8,6 +8,7 @@ import java.util.UUID
 interface UserJpaRepository : JpaRepository<UserJpaEntity, UUID> {
     fun existsByEmail(email: String): Boolean
     fun findByEmail(email: String): UserJpaEntity?
+    fun findByPendingEmail(email: String): UserJpaEntity?
     fun existsByUsername(username: String): Boolean
     fun findByUsername(username: String): UserJpaEntity?
     fun findByIsEmailVerifiedFalseAndCreatedAtBefore(cutoff: OffsetDateTime): List<UserJpaEntity>

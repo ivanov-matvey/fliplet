@@ -28,6 +28,9 @@ data class UserJpaEntity(
     @Column(nullable = false, unique = true, columnDefinition = "email")
     var email: String,
 
+    @Column(nullable = false, unique = true, columnDefinition = "email")
+    var pendingEmail: String?,
+
     @Column(nullable = true, columnDefinition = "TEXT")
     var avatarUrl: String? = null,
 
@@ -44,4 +47,7 @@ data class UserJpaEntity(
     @UpdateTimestamp
     @Column(nullable = false)
     val updatedAt: OffsetDateTime,
+
+    @Column
+    val pendingEmailRequestedAt: OffsetDateTime? = null,
 )

@@ -20,6 +20,11 @@ class UserRepositoryImpl(
         return userEntity?.toDomain()
     }
 
+    override fun findByPendingEmail(email: String): User? {
+        val userEntity = userJpaRepository.findByPendingEmail(email)
+        return userEntity?.toDomain()
+    }
+
     override fun findById(id: UUID): User? {
         val userEntity = userJpaRepository.findById(id)
         return userEntity.orElse(null)?.toDomain()
@@ -47,4 +52,5 @@ class UserRepositoryImpl(
         val entity = user.toJpaEntity()
         userJpaRepository.delete(entity)
     }
+
 }

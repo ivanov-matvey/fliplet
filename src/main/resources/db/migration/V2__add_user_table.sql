@@ -8,9 +8,11 @@ CREATE TABLE users (
     username citext NOT NULL CONSTRAINT username_length CHECK (char_length(username) <= 32),
     name VARCHAR(100) NULL,
     email email NOT NULL UNIQUE,
+    pending_email email NULL,
     password_hash TEXT NOT NULL,
     avatar_url TEXT NULL,
     is_email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE NOT NULL
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    pending_email_requested_at TIMESTAMP WITH TIME ZONE
 );

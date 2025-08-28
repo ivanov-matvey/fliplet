@@ -9,11 +9,13 @@ fun User.toJpaEntity() = UserJpaEntity(
     username = this.username,
     name = this.name,
     email = this.email,
+    pendingEmail = this.pendingEmail,
     avatarUrl = this.avatarUrl,
     passwordHash = this.passwordHash,
     isEmailVerified = this.isEmailVerified,
     createdAt = this.createdAt,
     updatedAt = this.updatedAt,
+    pendingEmailRequestedAt = this.pendingEmailRequestedAt,
 )
 
 fun UserJpaEntity.toDomain() = User.reconstitute(
@@ -21,9 +23,11 @@ fun UserJpaEntity.toDomain() = User.reconstitute(
     username = this.username,
     name = this.name,
     email = this.email,
+    pendingEmail = this.pendingEmail,
     avatarUrl = this.avatarUrl,
     passwordHash = this.passwordHash,
     isEmailVerified = this.isEmailVerified,
     createdAt = this.createdAt,
     updatedAt = this.updatedAt,
+    pendingEmailRequestedAt = this.pendingEmailRequestedAt,
 )
