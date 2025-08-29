@@ -49,7 +49,7 @@ jwt:
   refresh-token-expiration-ms: 2592000000
 
 email:
-  verification-code-expiration-minutes: 1
+  verification-code-expiration-minutes: 15
 
 app:
   mail:

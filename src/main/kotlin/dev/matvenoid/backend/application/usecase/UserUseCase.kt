@@ -8,4 +8,5 @@ interface UserUseCase {
     fun findByUsername(username: String): UserResponse
     fun updateEmail(id: UUID, newEmail: String)
     fun updateName(id: UUID, newName: String): UserResponse
+    fun updateUsername(id: UUID, newUsername: String): UserResponse
 }

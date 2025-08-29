@@ -63,7 +63,20 @@ class UserService(
         val updatedUser = userRepository.save(user.copy(name = newName))
 
         logger.info("User updated ({})", newName)
+        return updatedUser.toResponse()
+    }
 
+    @Transactional
+    override fun updateUsername(id: UUID, newUsername: String): UserResponse {
+        val user = findUserOrThrow(id)
+        if (userRepository.findByUsername(newUsername) != null) {
+            logger.warn("Update failed: username already taken ({})", newUsername)
+            throw UserAlreadyExistsException("Имя пользователя уже используется")
+        }
+
+        val updatedUser = userRepository.save(user.copy(username = newUsername))
+
+        logger.info("User updated ({})", newUsername)
         return updatedUser.toResponse()
     }
 

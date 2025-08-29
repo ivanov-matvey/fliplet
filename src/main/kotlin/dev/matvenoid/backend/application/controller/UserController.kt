@@ -2,6 +2,7 @@ package dev.matvenoid.backend.application.controller
 
 import dev.matvenoid.backend.application.dto.UpdateEmailRequest
 import dev.matvenoid.backend.application.dto.UpdateNameRequest
+import dev.matvenoid.backend.application.dto.UpdateUsernameRequest
 import dev.matvenoid.backend.application.dto.UserResponse
 import dev.matvenoid.backend.application.service.UserService
 import jakarta.validation.Valid
@@ -62,8 +63,11 @@ class UserController(
     @PatchMapping(("/me/username"))
     fun patchUsername(
         @AuthenticationPrincipal jwt: Jwt,
+        @RequestBody @Valid request: UpdateUsernameRequest,
     ): ResponseEntity<UserResponse> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        val id = UUID.fromString(jwt.subject)
+        val updatedUser = userService.updateUsername(id, request.username)
+        return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 
     @PatchMapping("/me/avatar")

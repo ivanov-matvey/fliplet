@@ -14,7 +14,7 @@ class UsernameGenerator(
         "system", "support", "help", "api"
     )
 
-    private val slugRegex   = Regex("[^a-z0-9_-]")
+    private val slugRegex = Regex("[^a-z0-9_-]")
     private val dashCleanup = Regex("-+")
 
 
@@ -28,9 +28,9 @@ class UsernameGenerator(
             .trim('-')
             .let {
                 when {
-                    it.length < 3      -> "user"
-                    it in reserved     -> "user-$it"
-                    else               -> it
+                    it.length < 3 -> "user"
+                    it in reserved -> "user-$it"
+                    else -> it
                 }
             }
 
