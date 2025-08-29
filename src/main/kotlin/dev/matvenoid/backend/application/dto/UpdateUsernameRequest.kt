@@ -3,7 +3,7 @@ package dev.matvenoid.backend.application.dto
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 
-data class UpdateUsernameRequest (
+data class UpdateUsernameRequest(
     @field:NotBlank(message = "Имя пользователя не заполнено")
     @field:Pattern(
         regexp = "^[a-z0-9_-]{3,32}$",

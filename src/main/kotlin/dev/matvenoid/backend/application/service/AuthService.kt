@@ -112,7 +112,7 @@ class AuthService(
 
         when {
             userByEmail?.isEmailVerified == true ->
-                throw IllegalStateException("E-mail уже подтверждён")
+                throw IllegalStateException("Email уже подтверждён")
 
             userByPending != null -> {
                 if (userByEmail != null) {
@@ -140,12 +140,12 @@ class AuthService(
     override fun login(request: LoginRequest): AuthResponse {
         val user = userRepository.findByEmail(request.email)?: run {
             logger.warn("Login failed: user not found ({})", request.email)
-            throw BadCredentialsException("Неверный адрес электронной почты или пароль")
+            throw BadCredentialsException("Неверный адрес электронной почты")
         }
 
         if (!passwordEncoder.matches(request.password, user.passwordHash)) {
             logger.warn("Login failed: bad credentials ({})", request.email)
-            throw BadCredentialsException("Неверный адрес электронной почты или пароль")
+            throw BadCredentialsException("Неверный пароль")
         }
 
         if (!user.isEmailVerified) {

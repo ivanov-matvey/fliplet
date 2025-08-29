@@ -2,6 +2,7 @@ package dev.matvenoid.backend.application.controller
 
 import dev.matvenoid.backend.application.dto.UpdateEmailRequest
 import dev.matvenoid.backend.application.dto.UpdateNameRequest
+import dev.matvenoid.backend.application.dto.UpdatePasswordRequest
 import dev.matvenoid.backend.application.dto.UpdateUsernameRequest
 import dev.matvenoid.backend.application.dto.UserResponse
 import dev.matvenoid.backend.application.service.UserService
@@ -46,7 +47,7 @@ class UserController(
         @RequestBody @Valid request: UpdateEmailRequest,
     ): ResponseEntity<Void> {
         val id = UUID.fromString(jwt.subject)
-        userService.updateEmail(id, request.email)
+        userService.updateEmail(id, request)
         return ResponseEntity(HttpStatus.OK)
     }
 
@@ -56,7 +57,7 @@ class UserController(
         @RequestBody @Valid request: UpdateNameRequest,
     ): ResponseEntity<UserResponse> {
         val id = UUID.fromString(jwt.subject)
-        val updatedUser = userService.updateName(id, request.name)
+        val updatedUser = userService.updateName(id, request)
         return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 
@@ -66,7 +67,7 @@ class UserController(
         @RequestBody @Valid request: UpdateUsernameRequest,
     ): ResponseEntity<UserResponse> {
         val id = UUID.fromString(jwt.subject)
-        val updatedUser = userService.updateUsername(id, request.username)
+        val updatedUser = userService.updateUsername(id, request)
         return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 
@@ -80,7 +81,10 @@ class UserController(
     @PatchMapping("/me/password")
     fun patchPassword(
         @AuthenticationPrincipal jwt: Jwt,
+        @RequestBody @Valid request: UpdatePasswordRequest,
     ): ResponseEntity<UserResponse> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        val id = UUID.fromString(jwt.subject)
+        val updatedUser = userService.updatePassword(id, request)
+        return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 }
