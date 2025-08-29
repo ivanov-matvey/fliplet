@@ -42,12 +42,12 @@ class JwtService {
     }
 
     fun generateAccessToken(userId: UUID): String {
-        logger.info("Generating new access token for user ID: {}", userId)
+        logger.info("Generate new access token ({})", userId)
         return generateToken(userId, accessTokenExpiration.toLong())
     }
 
     fun generateRefreshToken(userId: UUID): String {
-        logger.info("Generating new refresh token for user ID: {}", userId)
+        logger.info("Generate new refresh token ({})", userId)
         return generateToken(userId, refreshTokenExpiration.toLong())
     }
 
@@ -57,7 +57,6 @@ class JwtService {
             val notExpired = claims.expiration.after(Date())
             val subjectOk  = UUID.fromString(claims.subject) == userId
             val valid = notExpired && subjectOk
-            logger.debug("Token valid={} (notExpired={}, subjectOk={}) for {}", valid, notExpired, subjectOk, userId)
             return valid
         } catch (e: JwtException) {
             logger.warn("JWT validation failed: {}", e.message)
@@ -68,10 +67,9 @@ class JwtService {
     fun extractUserId(token: String): UUID? {
         return try {
             val id = UUID.fromString(extractClaim(token, Claims::getSubject))
-            logger.debug("Extracted userId {} from token", id)
             id
         } catch (e: Exception) {
-            logger.warn("Could not extract user ID from token: {}", e.message)
+            logger.warn("Extract user ID from token failed: {}", e.message)
             null
         }
     }

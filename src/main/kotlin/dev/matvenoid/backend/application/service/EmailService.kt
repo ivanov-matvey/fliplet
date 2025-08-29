@@ -42,7 +42,7 @@ class EmailService(
 
             mailSender.send(message)
 
-            logger.info("Verification email sent to {}", email)
+            logger.info("Verification email sent ({})", email)
         } catch (e: MailException) {
             logger.error("Failed to send verification email to {}: {}", email, e.message)
         } catch (e: Exception) {
