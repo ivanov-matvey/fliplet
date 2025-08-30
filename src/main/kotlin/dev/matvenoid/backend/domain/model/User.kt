@@ -4,13 +4,15 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 
+private const val DEFAULT_AVATAR_KEY = "avatars/default.png"
+
 class User private constructor(
     val id: UUID,
     val email: String,
     val pendingEmail: String?,
     val name: String?,
     val username: String,
-    val avatarUrl: String?,
+    val avatarUrl: String,
     val passwordHash: String,
     val isEmailVerified: Boolean,
     val createdAt: OffsetDateTime,
@@ -20,19 +22,17 @@ class User private constructor(
     companion object {
         fun create(
             username: String,
-            name: String?,
             email: String,
-            avatarUrl: String?,
             passwordHash: String,
         ): User {
             val now = OffsetDateTime.now(ZoneOffset.UTC)
             return User(
                 id = UUID.randomUUID(),
                 username = username,
-                name = name,
+                name = null,
                 email = email,
                 pendingEmail = null,
-                avatarUrl = avatarUrl,
+                avatarUrl = DEFAULT_AVATAR_KEY,
                 passwordHash = passwordHash,
                 isEmailVerified = false,
                 createdAt = now,
@@ -48,7 +48,7 @@ class User private constructor(
             email: String,
             pendingEmail: String?,
             passwordHash: String,
-            avatarUrl: String?,
+            avatarUrl: String,
             isEmailVerified: Boolean,
             createdAt: OffsetDateTime,
             updatedAt: OffsetDateTime,
@@ -74,7 +74,7 @@ class User private constructor(
         pendingEmail: String? = this.pendingEmail,
         name: String? = this.name,
         username: String = this.username,
-        avatarUrl: String? = this.avatarUrl,
+        avatarUrl: String = this.avatarUrl,
         passwordHash: String = this.passwordHash,
         isEmailVerified: Boolean = this.isEmailVerified,
         createdAt: OffsetDateTime = this.createdAt,

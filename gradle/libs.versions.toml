@@ -7,6 +7,7 @@ flywaydb = "11.10.2"
 testcontainers = "1.19.8"
 libphonenumber = "9.0.11"
 jsonwebtoken = "0.12.6"
+awssdk = "2.32.32"
 
 
 [libraries]
@@ -27,6 +28,7 @@ libphonenumber = { group = "com.googlecode.libphonenumber", name = "libphonenumb
 jjwt-api = { group = "io.jsonwebtoken", name = "jjwt-api", version.ref = "jsonwebtoken" }
 jjwt-impl = { group = "io.jsonwebtoken", name = "jjwt-impl", version.ref = "jsonwebtoken" }
 jjwt-jackson = { group = "io.jsonwebtoken", name = "jjwt-jackson", version.ref = "jsonwebtoken" }
+s3 = { group = "software.amazon.awssdk", name = "s3", version.ref = "awssdk" }
 
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "springFramework" }
 kotlin-test-junit5 = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }

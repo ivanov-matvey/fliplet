@@ -5,9 +5,9 @@ spring:
   application:
     name: backend
   datasource:
-    url: jdbc:postgresql://fliplet-postgres:5432/fliplet
-    username: postgres
-    password: postgres
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -15,13 +15,13 @@ spring:
     show-sql: false
   data:
     redis:
-      host: fliplet-redis
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   mail:
     host: smtp.gmail.com
     port: 587
-    username: matvenoid@gmail.com
-    password: smukvemmydhchbcs
+    username: ${SMTP_USERNAME:test@example.com}
+    password: ${SMTP_PASSWORD:test}
     properties:
       mail:
         smtp:
@@ -30,6 +30,16 @@ spring:
             enable: true
             required: true
   output.ansi.enabled: ALWAYS
+
+yc:
+  s3:
+    bucket: fliplet
+    endpoint: https://storage.yandexcloud.net
+    region: ru-central1
+    host: storage.yandexcloud.net
+  avatars:
+    allowedContentTypes: image/jpg,image/jpeg,image/png,image/webp
+    keyPrefix: avatars
 
 logging:
   level:
@@ -44,7 +54,7 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger - %msg%n"
 
 jwt:
-  secret: diqe0NzdgoCU/HKyv3RG9gmVmgRvvz2b1EOXUlIk1jvnp3upWmpo/ihv6jrGmucRlcwHnjybBjX3jnUdkxCSFQ==
+  secret: ${JWT_SECRET:test-secret}
   access-token-expiration-ms: 1800000
   refresh-token-expiration-ms: 2592000000
 

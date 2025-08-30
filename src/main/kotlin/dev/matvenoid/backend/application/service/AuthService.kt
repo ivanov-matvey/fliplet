@@ -45,9 +45,7 @@ class AuthService(
         val username = usernameGenerator.generate(request.email)
         val user = User.create(
             username = username,
-            name = null,
             email = request.email,
-            avatarUrl = null,
             passwordHash = passwordEncoder.encode(request.password)
         )
 

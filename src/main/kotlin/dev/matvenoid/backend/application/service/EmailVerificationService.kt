@@ -11,12 +11,11 @@ enum class VerificationType { REGISTER, CHANGE }
 
 @Service
 class EmailVerificationService(
-    private val redisTemplate: RedisTemplate<String, String>
+    private val redisTemplate: RedisTemplate<String, String>,
+    @param:Value($$"${email.verification-code-expiration-minutes}")
+    private var verificationCodeExpirationMinutes: Long
 ) {
     private val logger = LoggerFactory.getLogger(EmailVerificationService::class.java)
-
-    @Value($$"${email.verification-code-expiration-minutes}")
-    private var verificationCodeExpirationMinutes: Long = 15
 
     private fun generateKey(type: VerificationType, email: String) =
         "email_verification:${type.name.lowercase()}:${email.lowercase()}"

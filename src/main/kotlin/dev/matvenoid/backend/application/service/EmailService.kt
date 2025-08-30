@@ -13,14 +13,12 @@ import org.thymeleaf.spring6.SpringTemplateEngine
 @Service
 class EmailService(
     private val mailSender: JavaMailSender,
-    private val templateEngine: SpringTemplateEngine
+    private val templateEngine: SpringTemplateEngine,
+    @param:Value($$"${spring.mail.username}")
+    private  var fromEmail: String,
+    @param:Value($$"${app.mail.verification.subject}")
+    private var verificationSubject: String
 ) {
-    @Value($$"${spring.mail.username}")
-    private lateinit var fromEmail: String
-
-    @Value($$"${app.mail.verification.subject}")
-    private lateinit var verificationSubject: String
-
     private val logger = LoggerFactory.getLogger(EmailService::class.java)
 
     @Async

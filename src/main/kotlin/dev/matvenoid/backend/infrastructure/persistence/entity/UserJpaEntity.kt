@@ -28,11 +28,11 @@ data class UserJpaEntity(
     @Column(nullable = false, unique = true, columnDefinition = "email")
     var email: String,
 
-    @Column(nullable = false, unique = true, columnDefinition = "email")
+    @Column(nullable = true, unique = true, columnDefinition = "email")
     var pendingEmail: String?,
 
     @Column(nullable = true, columnDefinition = "TEXT")
-    var avatarUrl: String? = null,
+    var avatarUrl: String,
 
     @Column(nullable = false, columnDefinition = "TEXT")
     var passwordHash: String,

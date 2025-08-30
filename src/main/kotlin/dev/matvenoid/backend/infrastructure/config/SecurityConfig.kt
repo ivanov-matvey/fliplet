@@ -22,9 +22,10 @@ class SecurityConfig(
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity,
-                            customAuthEntryPoint: AuthenticationEntryPoint,
-                            customAccessDeniedHandler: AccessDeniedHandler
+    fun securityFilterChain(
+        http: HttpSecurity,
+        customAuthEntryPoint: AuthenticationEntryPoint,
+        customAccessDeniedHandler: AccessDeniedHandler,
     ): SecurityFilterChain {
         http
             .csrf { it.disable() }

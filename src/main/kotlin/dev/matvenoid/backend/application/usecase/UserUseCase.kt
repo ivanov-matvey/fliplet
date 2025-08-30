@@ -14,4 +14,5 @@ interface UserUseCase {
     fun updateName(id: UUID, request: UpdateNameRequest): UserResponse
     fun updateUsername(id: UUID, request: UpdateUsernameRequest): UserResponse
     fun updatePassword(id: UUID, request: UpdatePasswordRequest): UserResponse
+    fun updateAvatarUrl(id: UUID, key: String): UserResponse
 }

@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://fliplet-postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_URL: ${POSTGRES_URL}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
@@ -31,7 +31,7 @@ services:
     volumes:
       - fliplet-postgres-data:/var/lib/postgresql/data
     ports:
-      - "${DB_EXTERNAL_PORT}:5432"
+      - "${DB_EXTERNAL_PORT}:${DB_PORT}"
     networks:
       - fliplet-network
     healthcheck:
@@ -44,7 +44,7 @@ services:
   fliplet-redis:
     image: redis:8
     ports:
-      - "${REDIS_EXTERNAL_PORT}:6379"
+      - "${REDIS_EXTERNAL_PORT}:${REDIS_PORT}"
     volumes:
       - fliplet-redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf:ro

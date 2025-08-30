@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets
 class SecurityErrorHandlersConfig(
     private val objectMapper: ObjectMapper
 ) {
-
     @Bean
     fun customAuthenticationEntryPoint(): AuthenticationEntryPoint {
         return AuthenticationEntryPoint { request, response, _ ->

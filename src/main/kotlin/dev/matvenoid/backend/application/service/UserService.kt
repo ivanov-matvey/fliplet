@@ -5,7 +5,7 @@ import dev.matvenoid.backend.application.dto.UpdateNameRequest
 import dev.matvenoid.backend.application.dto.UpdatePasswordRequest
 import dev.matvenoid.backend.application.dto.UpdateUsernameRequest
 import dev.matvenoid.backend.application.dto.UserResponse
-import dev.matvenoid.backend.application.mapper.toResponse
+import dev.matvenoid.backend.application.mapper.UserMapper
 import dev.matvenoid.backend.application.usecase.UserUseCase
 import dev.matvenoid.backend.application.service.VerificationType.CHANGE
 import dev.matvenoid.backend.application.util.VerificationCodeGenerator
@@ -29,16 +29,17 @@ class UserService(
     private val emailService: EmailService,
     private val verificationCodeGenerator: VerificationCodeGenerator,
     private val passwordEncoder: PasswordEncoder,
+    private val userMapper: UserMapper,
 ) : UserUseCase {
     private val logger = LoggerFactory.getLogger(UserService::class.java)
 
     @Transactional(readOnly = true)
     override fun findById(id: UUID): UserResponse =
-        findUserOrThrow(id).toResponse()
+        userMapper.toResponse(findUserOrThrow(id))
 
     @Transactional(readOnly = true)
     override fun findByUsername(username: String): UserResponse =
-        findUserOrThrow(username).toResponse()
+        userMapper.toResponse(findUserOrThrow(username))
 
 
     @Transactional
@@ -70,7 +71,7 @@ class UserService(
         val updatedUser = userRepository.save(user.copy(name = request.name))
 
         logger.info("User name updated ({})", user.email)
-        return updatedUser.toResponse()
+        return userMapper.toResponse(updatedUser)
     }
 
     @Transactional
@@ -84,7 +85,7 @@ class UserService(
         val updatedUser = userRepository.save(user.copy(username = request.username))
 
         logger.info("Username updated ({})", user.email)
-        return updatedUser.toResponse()
+        return userMapper.toResponse(updatedUser)
     }
 
     override fun updatePassword(id: UUID, request: UpdatePasswordRequest): UserResponse {
@@ -100,7 +101,15 @@ class UserService(
         )
 
         logger.info("User password updated ({})", user.email)
-        return updatedUser.toResponse()
+        return userMapper.toResponse(updatedUser)
+    }
+
+    override fun updateAvatarUrl(id: UUID, key: String): UserResponse {
+        val user = findUserOrThrow(id)
+        val updatedUser = userRepository.save(user.copy(avatarUrl = key))
+
+        logger.info("User avatar updated ({})", user.email)
+        return userMapper.toResponse(updatedUser)
     }
 
     private fun findUserOrThrow(id: UUID) =

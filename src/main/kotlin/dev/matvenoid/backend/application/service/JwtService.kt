@@ -15,17 +15,12 @@ import java.util.*
 import javax.crypto.SecretKey
 
 @Service
-class JwtService {
+class JwtService(
+    @param:Value($$"${jwt.secret}") private val secretKey: String,
+    @param:Value($$"${jwt.access-token-expiration-ms}") private val accessTokenExpiration: Long,
+    @param:Value($$"${jwt.refresh-token-expiration-ms}") private val refreshTokenExpiration: Long
+) {
     private val logger = LoggerFactory.getLogger(JwtService::class.java)
-
-    @Value($$"${jwt.secret}")
-    private lateinit var secretKey: String
-
-    @Value($$"${jwt.access-token-expiration-ms}")
-    private lateinit var accessTokenExpiration: String
-
-    @Value($$"${jwt.refresh-token-expiration-ms}")
-    private lateinit var refreshTokenExpiration: String
 
     private val signInKey: SecretKey by lazy {
         val keyBytes = Decoders.BASE64.decode(secretKey)
@@ -43,12 +38,12 @@ class JwtService {
 
     fun generateAccessToken(userId: UUID): String {
         logger.info("Generate new access token ({})", userId)
-        return generateToken(userId, accessTokenExpiration.toLong())
+        return generateToken(userId, accessTokenExpiration)
     }
 
     fun generateRefreshToken(userId: UUID): String {
         logger.info("Generate new refresh token ({})", userId)
-        return generateToken(userId, refreshTokenExpiration.toLong())
+        return generateToken(userId, refreshTokenExpiration)
     }
 
     fun isTokenValid(token: String, userId: UUID): Boolean {
