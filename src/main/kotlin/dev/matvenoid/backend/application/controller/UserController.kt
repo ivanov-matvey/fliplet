@@ -67,7 +67,7 @@ class UserController(
         return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 
-    @PatchMapping(("/me/username"))
+    @PatchMapping("/me/username")
     fun patchUsername(
         @AuthenticationPrincipal jwt: Jwt,
         @RequestBody @Valid request: UpdateUsernameRequest,

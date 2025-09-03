@@ -49,6 +49,7 @@ class UserService(
         val updatedUser = user.copy(
             pendingEmail = request.email,
             pendingEmailRequestedAt = OffsetDateTime.now(ZoneOffset.UTC),
+            updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
         )
 
         try {
@@ -68,7 +69,12 @@ class UserService(
     @Transactional
     override fun updateName(id: UUID, request: UpdateNameRequest): UserResponse {
         val user = findUserOrThrow(id)
-        val updatedUser = userRepository.save(user.copy(name = request.name))
+        val updatedUser = userRepository.save(
+            user.copy(
+                name = request.name,
+                updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
+            )
+        )
 
         logger.info("User name updated ({})", user.email)
         return userMapper.toResponse(updatedUser)
@@ -82,7 +88,12 @@ class UserService(
             throw UserAlreadyExistsException("Имя пользователя уже используется")
         }
 
-        val updatedUser = userRepository.save(user.copy(username = request.username))
+        val updatedUser = userRepository.save(
+            user.copy(
+                username = request.username,
+                updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
+            )
+        )
 
         logger.info("Username updated ({})", user.email)
         return userMapper.toResponse(updatedUser)
@@ -97,7 +108,10 @@ class UserService(
         }
 
         val updatedUser = userRepository.save(
-            user.copy(passwordHash = passwordEncoder.encode(request.newPassword))
+            user.copy(
+                passwordHash = passwordEncoder.encode(request.newPassword),
+                updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
+            )
         )
 
         logger.info("User password updated ({})", user.email)
@@ -106,7 +120,12 @@ class UserService(
 
     override fun updateAvatarUrl(id: UUID, key: String): UserResponse {
         val user = findUserOrThrow(id)
-        val updatedUser = userRepository.save(user.copy(avatarUrl = key))
+        val updatedUser = userRepository.save(
+            user.copy(
+                avatarUrl = key,
+                updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
+            )
+        )
 
         logger.info("User avatar updated ({})", user.email)
         return userMapper.toResponse(updatedUser)

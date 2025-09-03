@@ -63,7 +63,7 @@ class User private constructor(
             passwordHash = passwordHash,
             isEmailVerified = isEmailVerified,
             createdAt = createdAt,
-            updatedAt=updatedAt,
+            updatedAt = updatedAt,
             pendingEmailRequestedAt = pendingEmailRequestedAt,
         )
     }

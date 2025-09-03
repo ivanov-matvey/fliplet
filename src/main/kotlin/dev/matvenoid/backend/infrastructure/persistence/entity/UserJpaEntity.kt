@@ -1,13 +1,13 @@
 package dev.matvenoid.backend.infrastructure.persistence.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.util.UUID
 import jakarta.persistence.Column
-import org.hibernate.annotations.CreationTimestamp
+import jakarta.persistence.OneToMany
 import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.annotations.UpdateTimestamp
 import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 
@@ -19,19 +19,19 @@ data class UserJpaEntity(
     @Column(updatable = false, nullable = false)
     val id: UUID,
 
-    @Column(nullable = false, columnDefinition = "citext")
+    @Column(nullable = false, unique = true, columnDefinition = "citext")
     var username: String,
 
     @Column(nullable = true, length = 100)
     var name: String?,
 
-    @Column(nullable = false, unique = true, columnDefinition = "email")
+    @Column(nullable = false, unique = true, columnDefinition = "citext")
     var email: String,
 
-    @Column(nullable = true, unique = true, columnDefinition = "email")
+    @Column(nullable = true, unique = true, columnDefinition = "citext")
     var pendingEmail: String?,
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     var avatarUrl: String,
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -40,14 +40,15 @@ data class UserJpaEntity(
     @Column(nullable = false)
     var isEmailVerified: Boolean = false,
 
-    @CreationTimestamp
     @Column(nullable = false)
     val createdAt: OffsetDateTime,
 
-    @UpdateTimestamp
     @Column(nullable = false)
     val updatedAt: OffsetDateTime,
 
     @Column
     val pendingEmailRequestedAt: OffsetDateTime? = null,
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = [CascadeType.ALL])
+    val collections: MutableList<CardCollectionJpaEntity> = mutableListOf(),
 )

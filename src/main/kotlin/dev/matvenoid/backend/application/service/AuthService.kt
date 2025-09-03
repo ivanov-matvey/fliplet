@@ -21,6 +21,8 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 @Service
 class AuthService(
@@ -72,7 +74,12 @@ class AuthService(
                 throw IllegalStateException("Электронная почта уже подтверждена")
             }
 
-            userRepository.save(user.copy(isEmailVerified = true))
+            userRepository.save(
+                user.copy(
+                    isEmailVerified = true,
+                    updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
+                )
+            )
             emailVerificationService.deleteVerificationCode(REGISTER, request.email)
 
             logger.info("Email verified ({})", request.email)
@@ -89,6 +96,7 @@ class AuthService(
                     email = user.pendingEmail!!,
                     pendingEmail = null,
                     pendingEmailRequestedAt = null,
+                    updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
                 )
             )
             emailVerificationService.deleteVerificationCode(CHANGE, request.email)
