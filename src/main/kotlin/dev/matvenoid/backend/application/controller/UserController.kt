@@ -1,13 +1,13 @@
 package dev.matvenoid.backend.application.controller
 
-import dev.matvenoid.backend.application.dto.AvatarConfirmRequest
-import dev.matvenoid.backend.application.dto.AvatarUploadInitRequest
-import dev.matvenoid.backend.application.dto.AvatarUploadInitResponse
-import dev.matvenoid.backend.application.dto.UpdateEmailRequest
-import dev.matvenoid.backend.application.dto.UpdateNameRequest
-import dev.matvenoid.backend.application.dto.UpdatePasswordRequest
-import dev.matvenoid.backend.application.dto.UpdateUsernameRequest
-import dev.matvenoid.backend.application.dto.UserResponse
+import dev.matvenoid.backend.application.dto.user.AvatarConfirmRequest
+import dev.matvenoid.backend.application.dto.user.AvatarUploadInitRequest
+import dev.matvenoid.backend.application.dto.user.AvatarUploadInitResponse
+import dev.matvenoid.backend.application.dto.user.PatchEmailRequest
+import dev.matvenoid.backend.application.dto.user.PatchNameRequest
+import dev.matvenoid.backend.application.dto.user.PatchPasswordRequest
+import dev.matvenoid.backend.application.dto.user.PatchUsernameRequest
+import dev.matvenoid.backend.application.dto.user.UserResponse
 import dev.matvenoid.backend.application.service.AvatarUploadLinkService
 import dev.matvenoid.backend.application.service.UserService
 import jakarta.validation.Valid
@@ -50,30 +50,30 @@ class UserController(
     @PatchMapping("/me/email")
     fun patchEmail(
         @AuthenticationPrincipal jwt: Jwt,
-        @RequestBody @Valid request: UpdateEmailRequest,
+        @RequestBody @Valid request: PatchEmailRequest,
     ): ResponseEntity<Void> {
         val id = UUID.fromString(jwt.subject)
-        userService.updateEmail(id, request)
+        userService.patchEmail(id, request)
         return ResponseEntity(HttpStatus.OK)
     }
 
     @PatchMapping("/me/name")
     fun patchName(
         @AuthenticationPrincipal jwt: Jwt,
-        @RequestBody @Valid request: UpdateNameRequest,
+        @RequestBody @Valid request: PatchNameRequest,
     ): ResponseEntity<UserResponse> {
         val id = UUID.fromString(jwt.subject)
-        val updatedUser = userService.updateName(id, request)
+        val updatedUser = userService.patchName(id, request)
         return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 
     @PatchMapping("/me/username")
     fun patchUsername(
         @AuthenticationPrincipal jwt: Jwt,
-        @RequestBody @Valid request: UpdateUsernameRequest,
+        @RequestBody @Valid request: PatchUsernameRequest,
     ): ResponseEntity<UserResponse> {
         val id = UUID.fromString(jwt.subject)
-        val updatedUser = userService.updateUsername(id, request)
+        val updatedUser = userService.patchUsername(id, request)
         return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 
@@ -100,17 +100,17 @@ class UserController(
         if (!request.key.startsWith("avatars/$id/")) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
         }
-        val updated = userService.updateAvatarUrl(id, request.key)
+        val updated = userService.patchAvatarUrl(id, request.key)
         return ResponseEntity(updated, HttpStatus.OK)
     }
 
     @PatchMapping("/me/password")
     fun patchPassword(
         @AuthenticationPrincipal jwt: Jwt,
-        @RequestBody @Valid request: UpdatePasswordRequest,
+        @RequestBody @Valid request: PatchPasswordRequest,
     ): ResponseEntity<UserResponse> {
         val id = UUID.fromString(jwt.subject)
-        val updatedUser = userService.updatePassword(id, request)
+        val updatedUser = userService.patchPassword(id, request)
         return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 }

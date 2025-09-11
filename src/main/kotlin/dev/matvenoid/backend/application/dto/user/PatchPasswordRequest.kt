@@ -1,9 +1,9 @@
-package dev.matvenoid.backend.application.dto
+package dev.matvenoid.backend.application.dto.user
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-data class UpdatePasswordRequest(
+data class PatchPasswordRequest(
     @field:NotBlank(message = "Пароль не заполнен")
     @field:Size(
         min = 8, max = 64,

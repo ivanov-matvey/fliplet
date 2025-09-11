@@ -1,4 +1,4 @@
-package dev.matvenoid.backend.application.dto
+package dev.matvenoid.backend.application.dto.user
 
 data class AvatarUploadInitResponse(
     val uploadUrl: String,

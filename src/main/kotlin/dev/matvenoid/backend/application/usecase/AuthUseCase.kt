@@ -1,11 +1,11 @@
 package dev.matvenoid.backend.application.usecase
 
-import dev.matvenoid.backend.application.dto.AuthResponse
-import dev.matvenoid.backend.application.dto.LoginRequest
-import dev.matvenoid.backend.application.dto.RefreshTokenRequest
-import dev.matvenoid.backend.application.dto.RegistrationRequest
-import dev.matvenoid.backend.application.dto.ResendVerificationCodeRequest
-import dev.matvenoid.backend.application.dto.VerifyRequest
+import dev.matvenoid.backend.application.dto.auth.AuthResponse
+import dev.matvenoid.backend.application.dto.auth.LoginRequest
+import dev.matvenoid.backend.application.dto.auth.RefreshTokenRequest
+import dev.matvenoid.backend.application.dto.auth.RegistrationRequest
+import dev.matvenoid.backend.application.dto.auth.ResendVerificationCodeRequest
+import dev.matvenoid.backend.application.dto.auth.VerifyRequest
 
 
 interface AuthUseCase {

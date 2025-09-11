@@ -8,4 +8,5 @@ import java.util.UUID
 
 interface CardCollectionJpaRepository : JpaRepository<CardCollectionJpaEntity, UUID> {
     fun findAllByUserId(userId: UUID, pageable: Pageable): Page<CardCollectionJpaEntity>
+    fun findAllByUserIdAndIsPublicTrue(userId: UUID, pageable: Pageable): Page<CardCollectionJpaEntity>
 }

@@ -31,8 +31,8 @@ class UserRepositoryImpl(
     }
 
     override fun save(user: User): User {
-        val entity = user.toJpaEntity()
-        val saved = userJpaRepository.save(entity)
+        val userEntity = user.toJpaEntity()
+        val saved = userJpaRepository.save(userEntity)
         return saved.toDomain()
     }
 
@@ -49,8 +49,8 @@ class UserRepositoryImpl(
     }
 
     override fun delete(user: User) {
-        val entity = user.toJpaEntity()
-        userJpaRepository.delete(entity)
+        val userEntity = user.toJpaEntity()
+        userJpaRepository.delete(userEntity)
     }
 
 }

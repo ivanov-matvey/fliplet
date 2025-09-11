@@ -6,5 +6,9 @@ import org.springframework.data.domain.Pageable
 import java.util.UUID
 
 interface CardCollectionRepository {
+    fun findById(id: UUID): CardCollection?
     fun findAllByUserId(userId: UUID, pageable: Pageable): Page<CardCollection>
+    fun findAllByUserIdAndIsPublicTrue(userId: UUID, pageable: Pageable): Page<CardCollection>
+    fun save(cardCollection: CardCollection): CardCollection
+    fun delete(cardCollection: CardCollection)
 }

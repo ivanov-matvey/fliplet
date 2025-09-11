@@ -1,6 +1,6 @@
 package dev.matvenoid.backend.application.mapper
 
-import dev.matvenoid.backend.application.dto.UserResponse
+import dev.matvenoid.backend.application.dto.user.UserResponse
 import dev.matvenoid.backend.application.service.LinkBuilderService
 import dev.matvenoid.backend.domain.model.User
 import org.springframework.stereotype.Component

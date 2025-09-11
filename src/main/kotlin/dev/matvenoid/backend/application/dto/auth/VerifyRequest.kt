@@ -1,4 +1,4 @@
-package dev.matvenoid.backend.application.dto
+package dev.matvenoid.backend.application.dto.auth
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

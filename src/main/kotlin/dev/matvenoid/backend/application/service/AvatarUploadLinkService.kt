@@ -1,6 +1,6 @@
 package dev.matvenoid.backend.application.service
 
-import dev.matvenoid.backend.application.dto.AvatarUploadInitResponse
+import dev.matvenoid.backend.application.dto.user.AvatarUploadInitResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.stereotype.Service

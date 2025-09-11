@@ -1,10 +1,10 @@
 package dev.matvenoid.backend.application.service
 
-import dev.matvenoid.backend.application.dto.UpdateEmailRequest
-import dev.matvenoid.backend.application.dto.UpdateNameRequest
-import dev.matvenoid.backend.application.dto.UpdatePasswordRequest
-import dev.matvenoid.backend.application.dto.UpdateUsernameRequest
-import dev.matvenoid.backend.application.dto.UserResponse
+import dev.matvenoid.backend.application.dto.user.PatchEmailRequest
+import dev.matvenoid.backend.application.dto.user.PatchNameRequest
+import dev.matvenoid.backend.application.dto.user.PatchPasswordRequest
+import dev.matvenoid.backend.application.dto.user.PatchUsernameRequest
+import dev.matvenoid.backend.application.dto.user.UserResponse
 import dev.matvenoid.backend.application.mapper.UserMapper
 import dev.matvenoid.backend.application.usecase.UserUseCase
 import dev.matvenoid.backend.application.service.VerificationType.CHANGE
@@ -43,7 +43,7 @@ class UserService(
 
 
     @Transactional
-    override fun updateEmail(id: UUID, request: UpdateEmailRequest) {
+    override fun patchEmail(id: UUID, request: PatchEmailRequest) {
         val user = findUserOrThrow(id)
 
         val updatedUser = user.copy(
@@ -67,7 +67,7 @@ class UserService(
     }
 
     @Transactional
-    override fun updateName(id: UUID, request: UpdateNameRequest): UserResponse {
+    override fun patchName(id: UUID, request: PatchNameRequest): UserResponse {
         val user = findUserOrThrow(id)
         val updatedUser = userRepository.save(
             user.copy(
@@ -81,7 +81,7 @@ class UserService(
     }
 
     @Transactional
-    override fun updateUsername(id: UUID, request: UpdateUsernameRequest): UserResponse {
+    override fun patchUsername(id: UUID, request: PatchUsernameRequest): UserResponse {
         val user = findUserOrThrow(id)
         if (userRepository.findByUsername(request.username) != null) {
             logger.warn("Update failed: username already taken ({})", request.username)
@@ -99,7 +99,8 @@ class UserService(
         return userMapper.toResponse(updatedUser)
     }
 
-    override fun updatePassword(id: UUID, request: UpdatePasswordRequest): UserResponse {
+    @Transactional
+    override fun patchPassword(id: UUID, request: PatchPasswordRequest): UserResponse {
         val user = findUserOrThrow(id)
 
         if (!passwordEncoder.matches(request.password, user.passwordHash)) {
@@ -118,7 +119,8 @@ class UserService(
         return userMapper.toResponse(updatedUser)
     }
 
-    override fun updateAvatarUrl(id: UUID, key: String): UserResponse {
+    @Transactional
+    override fun patchAvatarUrl(id: UUID, key: String): UserResponse {
         val user = findUserOrThrow(id)
         val updatedUser = userRepository.save(
             user.copy(
