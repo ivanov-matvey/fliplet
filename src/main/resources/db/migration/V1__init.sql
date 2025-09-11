@@ -26,3 +26,14 @@ CREATE TABLE card_collections (
 );
 
 CREATE INDEX idx_collections_user ON card_collections(user_id);
+
+CREATE TABLE cards (
+    id UUID PRIMARY KEY NOT NULL,
+    card_collection_id UUID NOT NULL REFERENCES card_collections(id) ON DELETE CASCADE,
+    front TEXT NOT NULL,
+    back TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX idx_cards_collection ON cards(card_collection_id);

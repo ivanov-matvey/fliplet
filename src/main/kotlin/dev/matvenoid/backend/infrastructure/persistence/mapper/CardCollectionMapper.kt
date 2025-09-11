@@ -4,7 +4,7 @@ import dev.matvenoid.backend.domain.model.CardCollection
 import dev.matvenoid.backend.infrastructure.persistence.entity.CardCollectionJpaEntity
 import dev.matvenoid.backend.infrastructure.persistence.entity.UserJpaEntity
 
-fun CardCollection.toJpaEntity(userRef: UserJpaEntity) =
+fun CardCollection.toJpaEntity(userRef: UserJpaEntity): CardCollectionJpaEntity =
     CardCollectionJpaEntity(
         id = this.id,
         user = userRef,
@@ -15,7 +15,7 @@ fun CardCollection.toJpaEntity(userRef: UserJpaEntity) =
         updatedAt = this.updatedAt,
     )
 
-fun CardCollectionJpaEntity.toDomain() =
+fun CardCollectionJpaEntity.toDomain(): CardCollection =
     CardCollection.reconstitute(
         id = this.id,
         userId = this.user.id,

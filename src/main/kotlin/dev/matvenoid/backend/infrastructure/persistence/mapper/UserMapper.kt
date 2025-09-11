@@ -4,7 +4,7 @@ import dev.matvenoid.backend.domain.model.User
 import dev.matvenoid.backend.infrastructure.persistence.entity.UserJpaEntity
 
 
-fun User.toJpaEntity() =
+fun User.toJpaEntity(): UserJpaEntity =
     UserJpaEntity(
         id = this.id,
         username = this.username,
@@ -19,7 +19,7 @@ fun User.toJpaEntity() =
         pendingEmailRequestedAt = this.pendingEmailRequestedAt,
     )
 
-fun UserJpaEntity.toDomain() =
+fun UserJpaEntity.toDomain(): User =
     User.reconstitute(
         id = this.id,
         username = this.username,
