@@ -1,5 +1,6 @@
 package dev.matvenoid.backend.application.mapper
 
+import dev.matvenoid.backend.application.dto.user.UserPublicResponse
 import dev.matvenoid.backend.application.dto.user.UserResponse
 import dev.matvenoid.backend.application.service.LinkBuilderService
 import dev.matvenoid.backend.domain.model.User
@@ -15,6 +16,13 @@ class UserMapper(
             username = user.username,
             name = user.name,
             email = user.email,
-            avatarUrl = user.avatarUrl.let { links.presignedGetUrl(it) }
+            avatarUrl = user.avatarUrl.let { links.rawUrl(it) }
+        )
+
+    fun toPublicResponse(user: User): UserPublicResponse =
+        UserPublicResponse(
+            username = user.username,
+            name = user.name,
+            avatarUrl = user.avatarUrl.let { links.rawUrl(it) }
         )
 }

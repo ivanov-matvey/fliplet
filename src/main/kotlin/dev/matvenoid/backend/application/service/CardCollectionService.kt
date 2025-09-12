@@ -9,8 +9,10 @@ import dev.matvenoid.backend.application.mapper.PageMapper
 import dev.matvenoid.backend.application.usecase.CardCollectionUseCase
 import dev.matvenoid.backend.domain.exception.AccessDeniedException
 import dev.matvenoid.backend.domain.exception.CardCollectionNotFoundException
+import dev.matvenoid.backend.domain.exception.UserNotFoundException
 import dev.matvenoid.backend.domain.model.CardCollection
 import dev.matvenoid.backend.domain.repository.CardCollectionRepository
+import dev.matvenoid.backend.domain.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -23,7 +25,8 @@ import java.util.UUID
 class CardCollectionService(
     private val cardCollectionRepository: CardCollectionRepository,
     private val pageMapper: PageMapper,
-    private val cardCollectionMapper: CardCollectionMapper
+    private val cardCollectionMapper: CardCollectionMapper,
+    private val userRepository: UserRepository,
 ) : CardCollectionUseCase {
     private val logger = LoggerFactory.getLogger(CardCollectionService::class.java)
 
@@ -38,7 +41,7 @@ class CardCollectionService(
                     id = cardCollection.id,
                     name = cardCollection.name,
                     description = cardCollection.description,
-                    isPublic = cardCollection.isPublic,
+                    public = cardCollection.isPublic,
                 )
             }
 
@@ -46,17 +49,22 @@ class CardCollectionService(
     }
 
     @Transactional(readOnly = true)
-    override fun getCardCollectionsByUserId(
-        userId: UUID,
+    override fun getCardCollectionsByUsername(
+        username: String,
         pageable: Pageable,
     ): PageResponse<CardCollectionResponse> {
-        val page = cardCollectionRepository.findAllByUserIdAndIsPublicTrue(userId, pageable)
+        val user = userRepository.findByUsername(username) ?: run {
+            logger.warn("Operation Failed: User not found ({})", username)
+            throw UserNotFoundException("Пользователь $username не найден")
+        }
+
+        val page = cardCollectionRepository.findAllByUserIdAndIsPublicTrue(user.id, pageable)
             .map { cardCollection ->
                 CardCollectionResponse(
                     id = cardCollection.id,
                     name = cardCollection.name,
                     description = cardCollection.description,
-                    isPublic = cardCollection.isPublic,
+                    public = cardCollection.isPublic,
                 )
             }
 
@@ -90,7 +98,7 @@ class CardCollectionService(
             userId = userId,
             name = request.name,
             description = request.description,
-            isPublic = request.isPublic ?: true,
+            isPublic = request.public ?: true,
         )
 
         val savedCardCollection = cardCollectionRepository.save(cardCollection)
@@ -119,7 +127,7 @@ class CardCollectionService(
             cardCollection.copy(
                 name = request.name ?: cardCollection.name,
                 description = request.description ?: cardCollection.description,
-                isPublic = request.isPublic ?: cardCollection.isPublic,
+                isPublic = request.public ?: cardCollection.isPublic,
                 updatedAt = OffsetDateTime.now(ZoneOffset.UTC)
             )
         )

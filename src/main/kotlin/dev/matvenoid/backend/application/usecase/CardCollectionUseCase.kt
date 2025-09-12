@@ -9,7 +9,7 @@ import java.util.UUID
 
 interface CardCollectionUseCase {
     fun getOwnCardCollections(userId: UUID, pageable: Pageable): PageResponse<CardCollectionResponse>
-    fun getCardCollectionsByUserId(userId: UUID, pageable: Pageable): PageResponse<CardCollectionResponse>
+    fun getCardCollectionsByUsername(username: String, pageable: Pageable): PageResponse<CardCollectionResponse>
     fun getCardCollection(id: UUID, userId: UUID): CardCollectionResponse
     fun createCardCollection(userId: UUID, request: CardCollectionRequest): CardCollectionResponse
     fun patchCardCollection(id: UUID, userId: UUID, request: PatchCardCollectionRequest): CardCollectionResponse

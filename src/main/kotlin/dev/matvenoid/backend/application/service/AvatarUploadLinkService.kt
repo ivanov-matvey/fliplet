@@ -54,15 +54,13 @@ class AvatarUploadLinkService(
 
         val presigned = presigner.presignPutObject(presignReq)
         val headers: Map<String, String> = presigned.signedHeaders()
-            .mapValues { (_, value) -> value.joinToString(",")} +
-                ("Content-Type" to contentType)
+            .mapValues { (_, value) -> value.joinToString(",")}
 
         return AvatarUploadInitResponse(
             uploadUrl = presigned.url().toString(),
             headers = headers,
             key = key,
             method = "PUT",
-            contentType = contentType
         )
     }
 }

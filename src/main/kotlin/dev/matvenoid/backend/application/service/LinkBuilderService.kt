@@ -14,10 +14,10 @@ class LinkBuilderService(
     private val presigner: S3Presigner
 ) {
     // Для фронта с настроенными CORS
-    fun publicUrl(key: String): String =
+    fun rawUrl(key: String): String =
         "https://$host/$bucket/$key"
 
-    fun presignedGetUrl(key: String, ttlMinutes: Long = 10): String {
+    fun presignedUrl(key: String, ttlMinutes: Long = 10): String {
         val getReq = GetObjectRequest.builder().bucket(bucket).key(key).build()
         val pre = GetObjectPresignRequest.builder()
             .signatureDuration(Duration.ofMinutes(ttlMinutes))

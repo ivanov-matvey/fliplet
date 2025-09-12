@@ -7,6 +7,7 @@ import dev.matvenoid.backend.application.dto.user.PatchEmailRequest
 import dev.matvenoid.backend.application.dto.user.PatchNameRequest
 import dev.matvenoid.backend.application.dto.user.PatchPasswordRequest
 import dev.matvenoid.backend.application.dto.user.PatchUsernameRequest
+import dev.matvenoid.backend.application.dto.user.UserPublicResponse
 import dev.matvenoid.backend.application.dto.user.UserResponse
 import dev.matvenoid.backend.application.service.AvatarUploadLinkService
 import dev.matvenoid.backend.application.service.UserService
@@ -42,7 +43,7 @@ class UserController(
     @GetMapping("/{username}")
     fun getByUsername(
         @PathVariable username: String,
-    ): ResponseEntity<UserResponse> {
+    ): ResponseEntity<UserPublicResponse> {
         val user = userService.findByUsername(username)
         return ResponseEntity(user, HttpStatus.OK)
     }
@@ -77,7 +78,7 @@ class UserController(
         return ResponseEntity(updatedUser, HttpStatus.OK)
     }
 
-    @PatchMapping("/me/avatar")
+    @PatchMapping("/me/avatar/upload-url")
     fun initAvatarUpload(
         @AuthenticationPrincipal jwt: Jwt,
         @RequestBody @Valid request: AvatarUploadInitRequest,

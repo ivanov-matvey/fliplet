@@ -4,6 +4,7 @@ import dev.matvenoid.backend.application.dto.user.PatchEmailRequest
 import dev.matvenoid.backend.application.dto.user.PatchNameRequest
 import dev.matvenoid.backend.application.dto.user.PatchPasswordRequest
 import dev.matvenoid.backend.application.dto.user.PatchUsernameRequest
+import dev.matvenoid.backend.application.dto.user.UserPublicResponse
 import dev.matvenoid.backend.application.dto.user.UserResponse
 import dev.matvenoid.backend.application.mapper.UserMapper
 import dev.matvenoid.backend.application.usecase.UserUseCase
@@ -38,8 +39,8 @@ class UserService(
         userMapper.toResponse(findUserOrThrow(id))
 
     @Transactional(readOnly = true)
-    override fun findByUsername(username: String): UserResponse =
-        userMapper.toResponse(findUserOrThrow(username))
+    override fun findByUsername(username: String): UserPublicResponse =
+        userMapper.toPublicResponse(findUserOrThrow(username))
 
 
     @Transactional

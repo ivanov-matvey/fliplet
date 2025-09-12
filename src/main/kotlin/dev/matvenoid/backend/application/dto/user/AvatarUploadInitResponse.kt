@@ -5,5 +5,4 @@ data class AvatarUploadInitResponse(
     val headers: Map<String, String>,
     val key: String,
     val method: String = "PUT",
-    val contentType: String
 )

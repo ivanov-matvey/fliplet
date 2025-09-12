@@ -8,5 +8,5 @@ data class CardCollectionRequest(
 
     val description: String?,
 
-    val isPublic: Boolean?,
+    val public: Boolean?,
 )

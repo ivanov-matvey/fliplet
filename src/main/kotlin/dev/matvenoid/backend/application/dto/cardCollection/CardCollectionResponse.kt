@@ -6,5 +6,5 @@ data class CardCollectionResponse(
     val id: UUID,
     val name: String,
     val description: String?,
-    val isPublic: Boolean,
+    val public: Boolean,
 )

@@ -11,6 +11,6 @@ class CardCollectionMapper {
             id = cardCollection.id,
             name = cardCollection.name,
             description = cardCollection.description,
-            isPublic = cardCollection.isPublic,
+            public = cardCollection.isPublic,
         )
 }

@@ -42,16 +42,16 @@ class CardCollectionController(
         return ResponseEntity(cardCollections, HttpStatus.OK)
     }
 
-    @GetMapping("/user/{userId}")
-    fun getCardCollectionsByUserId(
-        @PathVariable userId: UUID,
+    @GetMapping("/{username}")
+    fun getCardCollectionsByUsername(
+        @PathVariable username: String,
         @PageableDefault(
             size = 10,
             sort = ["createdAt"],
             direction = Sort.Direction.DESC
         ) pageable: Pageable,
     ): ResponseEntity<PageResponse<CardCollectionResponse>> {
-        val cardCollections = cardCollectionService.getCardCollectionsByUserId(userId, pageable)
+        val cardCollections = cardCollectionService.getCardCollectionsByUsername(username, pageable)
         return ResponseEntity(cardCollections, HttpStatus.OK)
     }
 
