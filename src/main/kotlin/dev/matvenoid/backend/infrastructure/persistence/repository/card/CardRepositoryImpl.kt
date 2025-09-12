@@ -37,6 +37,17 @@ class CardRepositoryImpl(
         return saved.toDomain()
     }
 
+    override fun saveAll(cards: List<Card>): List<Card> {
+        val cardCollectionRefs = cards
+            .map { it.cardCollectionId }
+            .distinct()
+            .associateWith { cardCollectionJpaRepository.getReferenceById(it) }
+
+        val cardEntities = cards.map { it.toJpaEntity(cardCollectionRefs[it.cardCollectionId]!!) }
+        val saved = cardJpaRepository.saveAll(cardEntities)
+        return saved.map { it.toDomain() }
+    }
+
     override fun delete(card: Card) {
         val cardCollectionRef = cardCollectionJpaRepository.getReferenceById(card.cardCollectionId)
         val cardEntity = card.toJpaEntity(cardCollectionRef)

@@ -124,6 +124,42 @@ class CardService(
     }
 
     @Transactional
+    fun createCards(
+        userId: UUID,
+        requests: List<CardRequest>
+    ): List<CardResponse> {
+        val cardCollectionId = requests.first().cardCollectionId
+        val sameCollection = requests.all { it.cardCollectionId == cardCollectionId }
+
+        val cardCollection = cardCollectionRepository.findById(cardCollectionId) ?: run {
+            logger.warn("Create Failed: Card collection not found ({})", cardCollectionId)
+            throw CardCollectionNotFoundException("Коллекция не найдена")
+        }
+
+        if (!sameCollection) {
+            logger.warn("Create failed: different collection IDs in one request")
+            throw IllegalArgumentException("Все карточки должны принадлежать одной коллекции")
+        }
+
+        if (cardCollection.userId != userId) {
+            logger.warn("Create Failed: Insufficient permissions ({})", cardCollectionId)
+            throw AccessDeniedException("Недостаточно прав")
+        }
+
+        val cards = requests.map { req ->
+            Card.create(
+                cardCollectionId = cardCollectionId,
+                userId = userId,
+                front = req.front,
+                back = req.back
+            )
+        }
+        val saved = cardRepository.saveAll(cards)
+        logger.info("Bulk created {} cards for collection ({})", saved.size, cardCollectionId)
+        return saved.map(cardMapper::toResponse)
+    }
+
+    @Transactional
     override fun patchCard(
         id: UUID,
         userId: UUID,

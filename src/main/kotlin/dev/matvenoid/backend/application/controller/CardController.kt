@@ -1,6 +1,7 @@
 package dev.matvenoid.backend.application.controller
 
 import dev.matvenoid.backend.application.dto.PageResponse
+import dev.matvenoid.backend.application.dto.card.BulkCardRequest
 import dev.matvenoid.backend.application.dto.card.CardRequest
 import dev.matvenoid.backend.application.dto.card.CardResponse
 import dev.matvenoid.backend.application.dto.card.PatchCardRequest
@@ -75,6 +76,16 @@ class CardController(
         val userId = UUID.fromString(jwt.subject)
         val card = cardService.createCard(userId, request.cardCollectionId ,request)
         return ResponseEntity(card, HttpStatus.CREATED)
+    }
+
+    @PostMapping("/bulk")
+    fun createCards(
+        @AuthenticationPrincipal jwt: Jwt,
+        @RequestBody @Valid request: BulkCardRequest
+    ): ResponseEntity<List<CardResponse>> {
+        val userId = UUID.fromString(jwt.subject)
+        val responses = cardService.createCards(userId, request.cards)
+        return ResponseEntity(responses, HttpStatus.CREATED)
     }
 
     @PatchMapping("/{id}")

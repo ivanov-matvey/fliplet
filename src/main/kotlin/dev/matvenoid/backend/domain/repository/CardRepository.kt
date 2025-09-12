@@ -10,5 +10,6 @@ interface CardRepository {
     fun findAllByCardCollectionUserId(userId: UUID, pageable: Pageable): Page<Card>
     fun findAllByCardCollectionId(cardCollectionId: UUID, pageable: Pageable): Page<Card>
     fun save(card: Card): Card
+    fun saveAll(cards: List<Card>): List<Card>
     fun delete(card: Card)
 }
