@@ -8,6 +8,8 @@ testcontainers = "1.19.8"
 libphonenumber = "9.0.11"
 jsonwebtoken = "0.12.6"
 awssdk = "2.32.32"
+pdfbox = "3.0.5"
+kotlinx = "1.9.0"
 
 
 [libraries]
@@ -29,6 +31,8 @@ jjwt-api = { group = "io.jsonwebtoken", name = "jjwt-api", version.ref = "jsonwe
 jjwt-impl = { group = "io.jsonwebtoken", name = "jjwt-impl", version.ref = "jsonwebtoken" }
 jjwt-jackson = { group = "io.jsonwebtoken", name = "jjwt-jackson", version.ref = "jsonwebtoken" }
 s3 = { group = "software.amazon.awssdk", name = "s3", version.ref = "awssdk" }
+pdfbox = { group = "org.apache.pdfbox", name = "pdfbox", version.ref = "pdfbox" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx" }
 
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "springFramework" }
 kotlin-test-junit5 = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
@@ -41,5 +45,6 @@ testcontainers-junit-jupiter = { group = "org.testcontainers", name = "junit-jup
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 kotlin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springFramework" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring" }

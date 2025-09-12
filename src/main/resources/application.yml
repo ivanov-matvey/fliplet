@@ -40,6 +40,27 @@ yc:
   avatars:
     allowedContentTypes: image/jpg,image/jpeg,image/png,image/webp
     keyPrefix: avatars
+  gpt:
+    url: "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
+    api-key: ${YANDEX_GPT_API_KEY:api-key}
+    model-uri: "gpt://${YANDEX_GPT_FOLDER_ID:folder-id}/yandexgpt-lite/latest"
+    options:
+      temperature: 0.2
+      max-tokens: 4000
+    system-prompt: |
+      Получаешь отрывок текста. Найди все явные определения (термин + его определение, формулы "-", "это", "означает" и т.п.). Выведи ТОЛЬКО такой JSON:
+      cards = [
+        {
+          "front": "<термин>",
+          "back": "<дословная цитата-определение>"
+        },
+        ...
+      ]
+      Требования:
+      front — только термин. Без кавычек и пояснений.
+      back — точная цитата (без воды) определения термина. Без правок и дополнительной информации.
+      Сохраняй порядок появления терминов.
+      Не добавляй ничего кроме указанного JSON.
 
 logging:
   level:

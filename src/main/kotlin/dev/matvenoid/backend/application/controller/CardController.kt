@@ -2,9 +2,11 @@ package dev.matvenoid.backend.application.controller
 
 import dev.matvenoid.backend.application.dto.PageResponse
 import dev.matvenoid.backend.application.dto.card.BulkCardRequest
+import dev.matvenoid.backend.application.dto.card.CardPreviewResponse
 import dev.matvenoid.backend.application.dto.card.CardRequest
 import dev.matvenoid.backend.application.dto.card.CardResponse
 import dev.matvenoid.backend.application.dto.card.PatchCardRequest
+import dev.matvenoid.backend.application.service.CardGenerationService
 import dev.matvenoid.backend.application.service.CardService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
@@ -21,13 +23,16 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
 @RestController
 @RequestMapping("/api/cards")
 class CardController(
     private val cardService: CardService,
+    private val cardGenerationService: CardGenerationService,
 ) {
     @GetMapping
     fun getOwnCards(
@@ -84,8 +89,16 @@ class CardController(
         @RequestBody @Valid request: BulkCardRequest
     ): ResponseEntity<List<CardResponse>> {
         val userId = UUID.fromString(jwt.subject)
-        val responses = cardService.createCards(userId, request.cards)
-        return ResponseEntity(responses, HttpStatus.CREATED)
+        val cards = cardService.createCards(userId, request.cards)
+        return ResponseEntity(cards, HttpStatus.CREATED)
+    }
+
+    @PostMapping("/generate")
+    fun generateCards(
+        @RequestPart("file") pdf: MultipartFile
+    ): ResponseEntity<List<CardPreviewResponse>> {
+        val cards = cardGenerationService.generateFromPdf(pdf.bytes)
+        return ResponseEntity(cards, HttpStatus.OK)
     }
 
     @PatchMapping("/{id}")
