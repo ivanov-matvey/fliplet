@@ -10,6 +10,12 @@
 
 ## API
 
+- [Авторизация (auth)](#Auth)
+- [Пользователи (users)](#Users)
+- [Коллекции (collections)](#Collections)
+- [Карточки (cards)](#Cards)
+- [Изучение карточек (study)](#Study)
+
 ### Auth
 
 | Метод | URL                                  | Описание                                                   |
