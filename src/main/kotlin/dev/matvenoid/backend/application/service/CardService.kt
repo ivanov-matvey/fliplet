@@ -10,8 +10,10 @@ import dev.matvenoid.backend.application.usecase.CardUseCase
 import dev.matvenoid.backend.domain.exception.AccessDeniedException
 import dev.matvenoid.backend.domain.exception.CardCollectionNotFoundException
 import dev.matvenoid.backend.domain.model.Card
+import dev.matvenoid.backend.domain.model.CardProgress
 import dev.matvenoid.backend.domain.repository.CardCollectionRepository
 import dev.matvenoid.backend.domain.repository.CardRepository
+import dev.matvenoid.backend.domain.repository.CardProgressRepository
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -24,6 +26,7 @@ import java.util.UUID
 class CardService(
     private val cardRepository: CardRepository,
     private val cardCollectionRepository: CardCollectionRepository,
+    private val cardProgressRepository: CardProgressRepository,
     private val pageMapper: PageMapper,
     private val cardMapper: CardMapper,
 ) : CardUseCase {
@@ -119,6 +122,12 @@ class CardService(
 
         val savedCard = cardRepository.save(card)
 
+        val progress = CardProgress.create(
+            cardId = savedCard.id,
+            userId = userId
+        )
+        cardProgressRepository.save(progress)
+
         logger.info("Card created ({})", card.id)
         return cardMapper.toResponse(savedCard)
     }
@@ -155,6 +164,12 @@ class CardService(
             )
         }
         val saved = cardRepository.saveAll(cards)
+
+        val progresses = saved.map { card ->
+            CardProgress.create(card.id, userId)
+        }
+        cardProgressRepository.saveAll(progresses)
+
         logger.info("Bulk created {} cards for collection ({})", saved.size, cardCollectionId)
         return saved.map(cardMapper::toResponse)
     }

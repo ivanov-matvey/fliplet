@@ -1,9 +1,9 @@
 package dev.matvenoid.backend.application.service
 
-import dev.matvenoid.backend.application.dto.cardCollection.CardCollectionResponse
+import dev.matvenoid.backend.application.dto.card_collection.CardCollectionResponse
 import dev.matvenoid.backend.application.dto.PageResponse
-import dev.matvenoid.backend.application.dto.cardCollection.CardCollectionRequest
-import dev.matvenoid.backend.application.dto.cardCollection.PatchCardCollectionRequest
+import dev.matvenoid.backend.application.dto.card_collection.CardCollectionRequest
+import dev.matvenoid.backend.application.dto.card_collection.PatchCardCollectionRequest
 import dev.matvenoid.backend.application.mapper.CardCollectionMapper
 import dev.matvenoid.backend.application.mapper.PageMapper
 import dev.matvenoid.backend.application.usecase.CardCollectionUseCase
@@ -137,7 +137,7 @@ class CardCollectionService(
     }
 
     @Transactional
-    override fun deleteCardCollection(id: UUID, userId: UUID,) {
+    override fun deleteCardCollection(id: UUID, userId: UUID) {
         val cardCollection = cardCollectionRepository.findById(id) ?: run {
             logger.warn("Delete Failed: Card collection not found ({})", id)
             throw CardCollectionNotFoundException("Коллекция не найдена")

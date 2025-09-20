@@ -51,4 +51,10 @@ data class UserJpaEntity(
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = [CascadeType.ALL])
     val collections: MutableList<CardCollectionJpaEntity> = mutableListOf(),
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = [CascadeType.ALL])
+    val cardProgresses: MutableList<CardProgressJpaEntity> = mutableListOf(),
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true,  cascade = [CascadeType.ALL])
+    val reviews: MutableList<ReviewJpaEntity> = mutableListOf(),
 )

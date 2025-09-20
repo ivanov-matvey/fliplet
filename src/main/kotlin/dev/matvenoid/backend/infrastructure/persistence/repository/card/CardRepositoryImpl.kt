@@ -4,7 +4,7 @@ import dev.matvenoid.backend.domain.model.Card
 import dev.matvenoid.backend.domain.repository.CardRepository
 import dev.matvenoid.backend.infrastructure.persistence.mapper.toDomain
 import dev.matvenoid.backend.infrastructure.persistence.mapper.toJpaEntity
-import dev.matvenoid.backend.infrastructure.persistence.repository.cardCollection.CardCollectionJpaRepository
+import dev.matvenoid.backend.infrastructure.persistence.repository.card_collection.CardCollectionJpaRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository

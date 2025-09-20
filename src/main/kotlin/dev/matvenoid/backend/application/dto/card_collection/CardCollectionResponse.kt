@@ -1,4 +1,4 @@
-package dev.matvenoid.backend.application.dto.cardCollection
+package dev.matvenoid.backend.application.dto.card_collection
 
 import java.util.UUID
 

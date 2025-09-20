@@ -1,4 +1,4 @@
-package dev.matvenoid.backend.infrastructure.persistence.repository.cardCollection
+package dev.matvenoid.backend.infrastructure.persistence.repository.card_collection
 
 import dev.matvenoid.backend.domain.model.CardCollection
 import dev.matvenoid.backend.domain.repository.CardCollectionRepository

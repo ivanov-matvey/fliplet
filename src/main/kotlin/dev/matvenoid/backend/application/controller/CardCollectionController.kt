@@ -1,9 +1,9 @@
 package dev.matvenoid.backend.application.controller
 
-import dev.matvenoid.backend.application.dto.cardCollection.CardCollectionResponse
+import dev.matvenoid.backend.application.dto.card_collection.CardCollectionResponse
 import dev.matvenoid.backend.application.dto.PageResponse
-import dev.matvenoid.backend.application.dto.cardCollection.CardCollectionRequest
-import dev.matvenoid.backend.application.dto.cardCollection.PatchCardCollectionRequest
+import dev.matvenoid.backend.application.dto.card_collection.CardCollectionRequest
+import dev.matvenoid.backend.application.dto.card_collection.PatchCardCollectionRequest
 import dev.matvenoid.backend.application.service.CardCollectionService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable

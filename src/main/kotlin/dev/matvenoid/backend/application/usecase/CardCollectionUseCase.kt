@@ -1,9 +1,9 @@
 package dev.matvenoid.backend.application.usecase
 
-import dev.matvenoid.backend.application.dto.cardCollection.CardCollectionResponse
+import dev.matvenoid.backend.application.dto.card_collection.CardCollectionResponse
 import dev.matvenoid.backend.application.dto.PageResponse
-import dev.matvenoid.backend.application.dto.cardCollection.CardCollectionRequest
-import dev.matvenoid.backend.application.dto.cardCollection.PatchCardCollectionRequest
+import dev.matvenoid.backend.application.dto.card_collection.CardCollectionRequest
+import dev.matvenoid.backend.application.dto.card_collection.PatchCardCollectionRequest
 import org.springframework.data.domain.Pageable
 import java.util.UUID
 
